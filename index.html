@@ -107,6 +107,44 @@ svg{display:block;flex-shrink:0}
 .acc-body{max-height:0;overflow:hidden;transition:max-height .35s ease,opacity .25s ease;opacity:0}
 .acc-body.open{max-height:700px;opacity:1}
 
+/* ── CHIPS ── */
+.chip-bar{display:flex;gap:7px;overflow-x:auto;padding-bottom:2px;scrollbar-width:none;margin-bottom:20px}
+.chip-bar::-webkit-scrollbar{display:none}
+.chip{flex-shrink:0;display:flex;align-items:center;gap:6px;padding:5px 12px;background:var(--surface);border:1px solid var(--border);border-radius:50px;font-size:12px;font-weight:500;color:var(--text-3);cursor:pointer;transition:all .15s;white-space:nowrap}
+.chip.red{border-color:var(--red-bdr);color:var(--red);background:var(--red-dim)}
+.chip.yellow{border-color:var(--yellow-bdr);color:var(--yellow);background:var(--yellow-dim)}
+.chip.green{border-color:var(--accent-bdr);color:var(--accent);background:var(--accent-dim)}
+/* ── SCOPE TABS ── */
+.scope-tabs{display:flex;gap:2px;background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:2px}
+.scope-tab{padding:4px 12px;border-radius:4px;font-size:11px;font-weight:600;color:var(--text-3);cursor:pointer;transition:all .12s}
+.scope-tab.active{background:var(--surface-2);color:var(--text-2)}
+/* ── CUSTOMER STATS HEADER ── */
+.cust-hero{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
+.hero-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:16px 18px}
+.hero-lbl{font-size:10px;font-weight:600;color:var(--text-4);text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px}
+.hero-val{font-size:24px;font-weight:700;color:var(--tx);letter-spacing:-.8px;line-height:1;margin-bottom:3px}
+.hero-sub{font-size:11px;color:var(--text-3)}
+/* ── CHAT POPUP ── */
+#chat-popup{position:fixed;bottom:90px;right:28px;width:360px;height:480px;background:var(--surface);border:1px solid var(--border-2);border-radius:var(--r-lg);display:flex;flex-direction:column;z-index:199;box-shadow:0 16px 48px rgba(0,0,0,.55);overflow:hidden;transition:opacity .2s,transform .2s}
+#chat-popup.cp-hidden{opacity:0;pointer-events:none;transform:translateY(10px)}
+.cp-head{padding:13px 16px;border-bottom:1px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:space-between}
+.cp-head-l{display:flex;align-items:center;gap:8px}
+.cp-title{font-size:13px;font-weight:700;color:var(--text)}
+.cp-ctx{font-size:11px;color:var(--text-3);background:var(--surface-2);border-radius:4px;padding:2px 7px;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cp-x{width:22px;height:22px;display:flex;align-items:center;justify-content:center;border-radius:var(--r);color:var(--text-3);cursor:pointer;transition:all .12s}
+.cp-x:hover{background:var(--surface-2);color:var(--text-2)}
+.cp-msgs{flex:1;overflow-y:auto;padding:12px 14px;display:flex;flex-direction:column;gap:10px}
+.cp-msg{max-width:86%;padding:9px 12px;border-radius:8px;font-size:12.5px;line-height:1.5}
+.cp-msg.u{align-self:flex-end;background:var(--accent-dim);border:1px solid var(--accent-bdr);color:var(--text)}
+.cp-msg.a{align-self:flex-start;background:var(--surface-2);border:1px solid var(--border);color:var(--text-2)}
+.cp-foot{padding:10px 14px;border-top:1px solid var(--border);flex-shrink:0}
+.cp-in-row{display:flex;gap:6px;align-items:center;background:var(--bg);border:1px solid var(--border);border-radius:50px;padding:6px 6px 6px 12px;transition:border-color .15s;margin-bottom:7px}
+.cp-in-row:focus-within{border-color:var(--accent-bdr)}
+.cp-in{flex:1;background:transparent;border:none;outline:none;font-size:12.5px;color:var(--text)}
+.cp-in::placeholder{color:var(--text-4)}
+.cp-send{width:24px;height:24px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;cursor:pointer;border:none;flex-shrink:0}
+.cp-kb-link{font-size:11px;color:var(--text-3);text-align:center;cursor:pointer;transition:color .12s}
+.cp-kb-link:hover{color:var(--accent)}
 /* ── OVERVIEW ── */
 .ov-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 .ov-grid-3{grid-template-columns:1fr 1fr 1fr}
@@ -131,19 +169,16 @@ svg{display:block;flex-shrink:0}
 .act-time{font-size:11px;color:var(--text-4);white-space:nowrap;margin-top:1px}
 
 /* ── PRODUCTS PORTFOLIO ── */
-.portfolio{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
-.pf-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;cursor:pointer;transition:border-color .15s}
+.portfolio{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.pf-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:26px 26px 22px;cursor:pointer;transition:border-color .15s;display:flex;flex-direction:column;gap:16px}
 .pf-card:hover{border-color:var(--border-2)}
-.pf-card.open{border-color:var(--border-2)}
-.pf-top{padding:20px 20px 16px;display:flex;flex-direction:column;gap:12px}
-.pf-name{font-size:15px;font-weight:700;color:var(--text)}
-.pf-desc{font-size:11.5px;color:var(--text-3);line-height:1.5}
-.pf-stats{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.pf-stat-num{font-size:11px;color:var(--text-3)}
-.pf-stat-num strong{color:var(--text-2)}
+.pf-top{display:flex;flex-direction:column;gap:12px}
+.pf-name{font-size:18px;font-weight:700;color:var(--text);letter-spacing:-.3px}
+.pf-desc{font-size:12px;color:var(--text-3);line-height:1.55}
+.pf-stats{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.pf-stat-num{font-size:11.5px;color:var(--text-3)}
+.pf-stat-num strong{color:var(--text-2);font-weight:600}
 .trend-up{color:var(--accent)}.trend-dn{color:var(--red)}.trend-fl{color:var(--text-4)}
-.pf-acc{border-top:1px solid var(--border)}
-.pf-acc-inner{padding:14px 20px 18px}
 .bullet-list{list-style:none;display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
 .bullet-item{display:flex;gap:8px;font-size:12px;color:var(--text-2);line-height:1.5}
 .bullet-item::before{content:'›';color:var(--text-4);flex-shrink:0}
@@ -263,8 +298,8 @@ svg{display:block;flex-shrink:0}
 .conn-btn.primary:hover{background:var(--accent);color:#000}
 
 /* CHAT BUBBLE */
-.chat-bubble{position:fixed;bottom:20px;right:20px;background:var(--accent);color:#000;border-radius:50px;padding:9px 16px;display:flex;align-items:center;gap:7px;font-size:12px;font-weight:700;cursor:pointer;box-shadow:0 4px 20px rgba(122,241,122,.2);z-index:200;transition:all .15s}
-.chat-bubble:hover{transform:translateY(-2px);box-shadow:0 6px 28px rgba(122,241,122,.3)}
+.chat-bubble{position:fixed;bottom:28px;right:28px;background:var(--accent);color:#000;border-radius:50px;padding:12px 22px;display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;cursor:pointer;box-shadow:0 4px 24px rgba(122,241,122,.25);z-index:200;transition:all .15s}
+.chat-bubble:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(122,241,122,.35)}
 </style>
 </head>
 <body>
@@ -350,6 +385,51 @@ const CLIENT = {
         "<strong>Notetaker positive</strong> — their team likes the summary quality for client meeting notes",
         "<strong>No urgent actions</strong> — stable account, low churn risk"
       ]
+    },
+    { id:4, name:"TechVentures Berlin", initials:"TV", arr:"€44k", arr_val:44,
+      signals:11, prev:7, industry:"Tech", risk:"med", problem_pct:45,
+      products:[0,1,2], last_contact:"2 days ago",
+      bullets:[
+        "<strong>CRM Sync custom field mapping</strong> — their Salesforce is heavily customised, global mapping breaks their workflows",
+        "<strong>Coaching Assistant positive</strong> — 3 signals praising call coaching for new AE cohort",
+        "<strong>Notetaker speaker labels</strong> — 2 complaints about missed labels on large group calls"
+      ]
+    },
+    { id:5, name:"Alpenwind GmbH", initials:"AW", arr:"€28k", arr_val:28,
+      signals:12, prev:6, industry:"Manufacturing", risk:"high", problem_pct:67,
+      products:[1,2], last_contact:"1 day ago",
+      bullets:[
+        "<strong>CRM Sync critical</strong> — 4 failures this week on shift-based daily Salesforce sync, ops team escalating",
+        "<strong>Coaching onboarding gap</strong> — new sales team hired, templates don't fit manufacturing cycles",
+        "<strong>Churn risk:</strong> Mentioned evaluating Fathom in last check-in — direct competitor"
+      ]
+    },
+    { id:6, name:"Medix Solutions", initials:"MS", arr:"€36k", arr_val:36,
+      signals:7, prev:8, industry:"Healthcare", risk:"low", problem_pct:29,
+      products:[0,3], last_contact:"4 days ago",
+      bullets:[
+        "<strong>Ask Bliro high usage</strong> — compliance team queries it daily for past meeting records",
+        "<strong>HIPAA data residency question</strong> — needs EU-only storage confirmation before their legal review",
+        "<strong>Positive NPS:</strong> Head of ops gave a 9 last month, expansion likely"
+      ]
+    },
+    { id:7, name:"FinFlux AG", initials:"FF", arr:"€22k", arr_val:22,
+      signals:5, prev:3, industry:"FinTech", risk:"med", problem_pct:40,
+      products:[0,1], last_contact:"6 days ago",
+      bullets:[
+        "<strong>Dynamics 365 sync lag</strong> — same intermittent issue as Nordwind, 1 open ticket",
+        "<strong>Meeting prep positive</strong> — sales team uses it before every investor call",
+        "<strong>Feature request:</strong> Sentiment score surfaced as a CRM field after call sync"
+      ]
+    },
+    { id:8, name:"Ravel Media GmbH", initials:"RM", arr:"€15k", arr_val:15,
+      signals:3, prev:4, industry:"Media", risk:"low", problem_pct:33,
+      products:[0], last_contact:"1 week ago",
+      bullets:[
+        "<strong>Notetaker-only customer</strong> — happy with transcription quality for podcast production notes",
+        "<strong>Signal volume declining</strong> — down 25% WoW, likely lower-usage phase",
+        "<strong>No complaints</strong> — quiet account, renewal expected"
+      ]
     }
   ],
 
@@ -414,10 +494,13 @@ const CLIENT = {
 
 /* ── COMPUTED ── */
 const totalSignals = () => CLIENT.customers.reduce((a,c)=>a+c.signals,0);
+const prevSignals = () => CLIENT.customers.reduce((a,c)=>a+c.prev,0);
 const urgency = p => p.problems * p.arr_stake;
 const sortedProducts = () => [...CLIENT.products].sort((a,b)=>urgency(b)-urgency(a));
 const topProduct = () => sortedProducts()[0];
 const pendingUpdates = () => CLIENT.updates.filter(u=>!u.pushed).length;
+const happinessScore = () => { const tot=CLIENT.customers.reduce((a,c)=>a+c.arr_val,0); const wt=CLIENT.customers.reduce((a,c)=>a+(c.problem_pct*c.arr_val),0); return Math.round(100-wt/tot); };
+const atRiskCount = () => CLIENT.customers.filter(c=>c.risk==='high').length;
 const trendPct = (cur,prev) => prev===0?null:Math.round(((cur-prev)/prev)*100);
 const trendStr = (cur,prev) => {
   const p = trendPct(cur,prev);
@@ -438,6 +521,9 @@ let currentPage = 'overview';
 let detailId = null;
 let detailType = null;
 let settingsTab = 'integrations';
+let activeScope = '7d';
+let chatPopupOpen = false;
+let popupHistory = [];
 let kbHistory = [
   { role:'system', content:`You are Marrow, an AI product management assistant for ${CLIENT.companyDisplay}. You help PMs understand product signals, customer health, and what to prioritize. Be concise and specific. Data context: ${JSON.stringify({products:CLIENT.products.map(p=>({name:p.name,signals:p.signals,problems:p.problems,open:p.open})),customers:CLIENT.customers.map(c=>({name:c.name,arr:c.arr,risk:c.risk,signals:c.signals}))})}` }
 ];
@@ -519,69 +605,79 @@ function topbar(title, sub='', backPage=null) {
 /* OVERVIEW */
 function pageOverview() {
   const sp = sortedProducts();
-  const prodRows = sp.slice(0,3).map(p=>`
+  const chips = CLIENT.updates.map(u=>`<div class="chip ${u.sev}" onclick="navTo('communication')">${u.title}</div>`).join('');
+  const prodRows = sp.slice(0,4).map(p=>`
     <div class="ov-row">
       <div class="dot ${statusClass(p.status)}"></div>
       <span class="ov-row-name">${p.name}</span>
-      <span class="ov-row-val">${trendStr(p.signals,p.prev)} ${p.signals} signals</span>
+      <span class="ov-row-val">${trendStr(p.signals,p.prev)} ${p.signals} sig</span>
     </div>`).join('');
-
-  const custRows = [...CLIENT.customers].sort((a,b)=>b.signals-a.signals).slice(0,3).map(c=>`
+  const custRows = [...CLIENT.customers].sort((a,b)=>b.signals-a.signals).slice(0,4).map(c=>`
     <div class="ov-row">
       <div class="dot ${c.risk==='high'?'red':c.risk==='med'?'yellow':'green'}"></div>
       <span class="ov-row-name">${c.name}</span>
       <span class="ov-row-val">${c.arr}</span>
     </div>`).join('');
-
   const updRows = CLIENT.updates.filter(u=>!u.pushed).slice(0,3).map(u=>`
     <div class="ov-row">
       <div class="dot ${u.sev}"></div>
       <span class="ov-row-name">${u.title}</span>
       <span class="ov-row-val">${u.time} ago</span>
     </div>`).join('');
-
   const actRows = CLIENT.activity.map(a=>`
     <div class="act-row">
       <div class="dot green" style="margin-top:5px"></div>
       <div class="act-text">${a.text}</div>
       <div class="act-time">${a.time}</div>
     </div>`).join('');
+  const commBoxes = `
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px">
+      <div style="background:var(--surface-2);border-radius:var(--r);padding:10px 12px"><div style="font-size:22px;font-weight:700;color:var(--red)">${CLIENT.updates.filter(u=>u.sev==='red').length}</div><div style="font-size:9px;text-transform:uppercase;letter-spacing:.5px;color:var(--text-4);margin-top:3px">Major</div></div>
+      <div style="background:var(--surface-2);border-radius:var(--r);padding:10px 12px"><div style="font-size:22px;font-weight:700;color:var(--yellow)">${CLIENT.updates.filter(u=>u.sev==='yellow').length}</div><div style="font-size:9px;text-transform:uppercase;letter-spacing:.5px;color:var(--text-4);margin-top:3px">Notable</div></div>
+      <div style="background:var(--surface-2);border-radius:var(--r);padding:10px 12px"><div style="font-size:22px;font-weight:700;color:var(--accent)">${pendingUpdates()}</div><div style="font-size:9px;text-transform:uppercase;letter-spacing:.5px;color:var(--text-4);margin-top:3px">Pending</div></div>
+      <div style="background:var(--surface-2);border-radius:var(--r);padding:10px 12px"><div style="font-size:22px;font-weight:700;color:var(--text)">${CLIENT.comms.pushed}</div><div style="font-size:9px;text-transform:uppercase;letter-spacing:.5px;color:var(--text-4);margin-top:3px">Pushed</div></div>
+    </div>`;
 
   return `
-  ${topbar(`Welcome back, ${CLIENT.user.name.split(' ')[0]}`,'','')}
+  <div class="topbar">
+    <div class="page-title" style="font-size:30px;letter-spacing:-.7px">Welcome back, ${CLIENT.user.name.split(' ')[0]}</div>
+    <div class="page-sub" style="margin-top:6px">${new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'})}</div>
+  </div>
   <div class="page-content">
-    <div class="ov-grid" style="margin-bottom:14px">
+    <div class="chip-bar">${chips}</div>
+    <div style="display:grid;grid-template-columns:2fr 1fr;gap:12px;margin-bottom:12px">
       <div class="ov-card" onclick="navTo('products')">
         <div class="ov-card-head">
           <span class="ov-card-label">Products</span>
-          <span class="ov-card-meta">${CLIENT.products.length} active</span>
+          <span class="ov-card-meta">${CLIENT.products.length} active · <span style="color:var(--red)">${sp[0].name} needs attention</span></span>
         </div>
-        <div class="ov-stat">${sp[0].name}</div>
-        <div class="ov-stat-sub">highest urgency this week · €${sp[0].arr_stake}k ARR at stake</div>
+        <div class="ov-stat">${CLIENT.products.length}</div>
+        <div class="ov-stat-sub">active products · €${sp[0].arr_stake}k ARR at highest urgency</div>
         ${prodRows}
         <div class="ov-see-all" onclick="event.stopPropagation();navTo('products')">View all products ${svgIcon(ICONS.chevron,10)}</div>
       </div>
       <div class="ov-card" onclick="navTo('customers')">
         <div class="ov-card-head">
           <span class="ov-card-label">Customers</span>
-          <span class="ov-card-meta">${totalSignals()} signals this week</span>
+          <span class="ov-card-meta">${CLIENT.customers.length} accounts</span>
         </div>
         <div class="ov-stat">${totalSignals()}</div>
-        <div class="ov-stat-sub">signals this week ${trendStr(totalSignals(), CLIENT.customers.reduce((a,c)=>a+c.prev,0))}</div>
+        <div class="ov-stat-sub">signals this week ${trendStr(totalSignals(), prevSignals())}</div>
         ${custRows}
-        <div class="ov-see-all" onclick="event.stopPropagation();navTo('customers')">View all customers ${svgIcon(ICONS.chevron,10)}</div>
+        <div class="ov-see-all" onclick="event.stopPropagation();navTo('customers')">View all ${svgIcon(ICONS.chevron,10)}</div>
       </div>
     </div>
-    <div class="ov-grid" style="margin-bottom:14px">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
       <div class="ov-card" onclick="navTo('communication')">
         <div class="ov-card-head">
           <span class="ov-card-label">Communication</span>
           <span class="ov-card-meta">${pendingUpdates()} pending</span>
         </div>
         <div class="ov-stat">${pendingUpdates()}</div>
-        <div class="ov-stat-sub">updates not yet pushed · ${CLIENT.comms.pushed} pushed this week</div>
+        <div class="ov-stat-sub" style="margin-bottom:12px">updates not yet pushed</div>
+        ${commBoxes}
         ${updRows}
-        <div class="ov-see-all" onclick="event.stopPropagation();navTo('communication')">View all updates ${svgIcon(ICONS.chevron,10)}</div>
+        <div class="ov-see-all" onclick="event.stopPropagation();navTo('communication')">View all ${svgIcon(ICONS.chevron,10)}</div>
       </div>
       <div class="ov-card" style="cursor:default">
         <div class="ov-card-head">
@@ -597,32 +693,25 @@ function pageOverview() {
 /* PRODUCTS */
 function pageProducts() {
   const cards = sortedProducts().map(p => {
-    const sentTotal = p.problems + p.requests + p.positive;
-    const pPct = sentTotal ? Math.round(p.problems/sentTotal*100) : 0;
+    const sentTotal = p.problems + p.requests + p.positive || 1;
+    const pPct = Math.round(p.problems/sentTotal*100);
     return `
-    <div class="pf-card" id="pf-${p.id}" onclick="togglePfCard(${p.id},event)">
-      <div class="pf-top">
-        <div>
+    <div class="pf-card" onclick="navTo('product-detail',${p.id})">
+      <div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
           <div class="pf-name">${p.name}</div>
-          <div class="pf-desc" style="margin-top:5px">${p.desc}</div>
-        </div>
-        <div class="pf-stats">
           <span class="tag ${statusClass(p.status)}">${statusLabel(p.status)}</span>
-          <span class="pf-stat-num"><strong>€${p.arr_stake}k</strong> ARR at stake</span>
-          <span class="pf-stat-num">${p.signals} signals ${trendStr(p.signals,p.prev)}</span>
-          <span class="pf-stat-num">${p.open} open actions</span>
-          <span class="pf-stat-num" style="color:var(--red)">${pPct}% problems</span>
         </div>
+        <div class="pf-desc">${p.desc}</div>
       </div>
-      <div class="acc-body pf-acc">
-        <div class="pf-acc-inner">
-          <ul class="bullet-list">
-            ${p.bullets.map(b=>`<li class="bullet-item">${b}</li>`).join('')}
-          </ul>
-          <div class="view-full-btn" onclick="event.stopPropagation();navTo('product-detail',${p.id})">
-            View full product ${svgIcon(ICONS.chevron,12)}
-          </div>
-        </div>
+      <div class="pf-stats">
+        <span class="pf-stat-num"><strong>€${p.arr_stake}k</strong> ARR at stake</span>
+        <span style="color:var(--border-2)">·</span>
+        <span class="pf-stat-num">${p.signals} signals ${trendStr(p.signals,p.prev)}</span>
+        <span style="color:var(--border-2)">·</span>
+        <span class="pf-stat-num">${p.open} open actions</span>
+        <span style="color:var(--border-2)">·</span>
+        <span class="pf-stat-num" style="color:var(--red)">${pPct}% problems</span>
       </div>
     </div>`}).join('');
 
@@ -631,15 +720,6 @@ function pageProducts() {
   <div class="page-content">
     <div class="portfolio">${cards}</div>
   </div>`;
-}
-
-function togglePfCard(id, e) {
-  const card = $(`pf-${id}`);
-  const body = card.querySelector('.acc-body');
-  const isOpen = card.classList.contains('open');
-  card.classList.toggle('open', !isOpen);
-  body.style.maxHeight = isOpen ? '0' : body.scrollHeight + 'px';
-  body.style.opacity = isOpen ? '0' : '1';
 }
 
 /* PRODUCT DETAIL */
@@ -736,9 +816,30 @@ function pageCustomers() {
       </div>
     </div>`).join('');
 
+  const hs = happinessScore();
+  const atR = atRiskCount();
+  const totalArr = CLIENT.customers.reduce((a,c)=>a+c.arr_val,0);
   return `
-  ${topbar('Customers', `${CLIENT.customers.reduce((a,c)=>a+c.signals,0)} signals this week across ${CLIENT.customers.length} accounts`)}
+  <div class="topbar">
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <div>
+        <div class="page-title">Customers</div>
+        <div class="page-sub">${CLIENT.customers.length} accounts · ${totalSignals()} signals</div>
+      </div>
+      <div class="scope-tabs">
+        <div class="scope-tab ${activeScope==='7d'?'active':''}" onclick="activeScope='7d';navTo('customers')">7d</div>
+        <div class="scope-tab ${activeScope==='30d'?'active':''}" onclick="activeScope='30d';navTo('customers')">30d</div>
+        <div class="scope-tab ${activeScope==='90d'?'active':''}" onclick="activeScope='90d';navTo('customers')">90d</div>
+      </div>
+    </div>
+  </div>
   <div class="page-content">
+    <div class="cust-hero">
+      <div class="hero-card"><div class="hero-lbl">Happiness score</div><div class="hero-val" style="color:${hs>=70?'var(--accent)':hs>=50?'var(--yellow)':'var(--red)'}">${hs}/100</div><div class="hero-sub">ARR-weighted · problem ratio</div></div>
+      <div class="hero-card"><div class="hero-lbl">At-risk accounts</div><div class="hero-val" style="color:${atR>0?'var(--red)':'var(--accent)'}">${atR}</div><div class="hero-sub">${atR} HIGH churn risk</div></div>
+      <div class="hero-card"><div class="hero-lbl">Total ARR</div><div class="hero-val">€${totalArr}k</div><div class="hero-sub">across ${CLIENT.customers.length} accounts</div></div>
+      <div class="hero-card"><div class="hero-lbl">Signal volume (${activeScope})</div><div class="hero-val">${totalSignals()}</div><div class="hero-sub">${trendStr(totalSignals(),prevSignals())} vs prior period</div></div>
+    </div>
     <div class="list-box">${rows}</div>
   </div>`;
 }
@@ -1089,9 +1190,81 @@ document.addEventListener('DOMContentLoaded', () => {
   <div class="main" id="main"></div>
 </div>
 
-<div class="chat-bubble" onclick="navTo('kb')">
-  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+<!-- Floating Chat Popup -->
+<div id="chat-popup" class="cp-hidden">
+  <div class="cp-head">
+    <div class="cp-head-l">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      <span class="cp-title">Ask Marrow</span>
+      <span class="cp-ctx" id="cp-ctx">bliro</span>
+    </div>
+    <div class="cp-x" onclick="toggleChat()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></div>
+  </div>
+  <div class="cp-msgs" id="cp-msgs">
+    <div class="cp-msg a">Hi! Ask me anything about your products, customers, or what to prioritise.</div>
+  </div>
+  <div class="cp-foot">
+    <div class="cp-in-row">
+      <input class="cp-in" id="cp-in" placeholder="Quick question…" onkeydown="if(event.key==='Enter')sendPopup()">
+      <button class="cp-send" onclick="sendPopup()"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>
+    </div>
+    <div class="cp-kb-link" onclick="toggleChat();navTo('kb')">Open full Knowledge Base →</div>
+  </div>
+</div>
+
+<div class="chat-bubble" onclick="toggleChat()">
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
   Ask Marrow
 </div>
+
+<script>
+function toggleChat() {
+  chatPopupOpen = !chatPopupOpen;
+  $('chat-popup').classList.toggle('cp-hidden', !chatPopupOpen);
+  if (chatPopupOpen) {
+    $('cp-ctx').textContent = currentPage === 'product-detail' && detailId !== null
+      ? CLIENT.products[detailId].name
+      : currentPage === 'customer-detail' && detailId !== null
+      ? CLIENT.customers[detailId].name
+      : currentPage.charAt(0).toUpperCase() + currentPage.slice(1);
+    setTimeout(() => $('cp-in').focus(), 100);
+  }
+}
+
+async function sendPopup() {
+  const inp = $('cp-in'), val = inp.value.trim();
+  if (!val) return;
+  inp.value = '';
+  const msgs = $('cp-msgs');
+  msgs.innerHTML += `<div class="cp-msg u">${val}</div>`;
+  msgs.scrollTop = msgs.scrollHeight;
+  const hasKey = window.MARROW_OPENAI_KEY && !window.MARROW_OPENAI_KEY.includes('paste');
+  if (!hasKey) {
+    msgs.innerHTML += `<div class="cp-msg a">Add your OpenAI key to marrow-config.js to enable live responses.</div>`;
+    msgs.scrollTop = msgs.scrollHeight;
+    return;
+  }
+  const ctxStr = $('cp-ctx').textContent;
+  const sysMsg = `You are Marrow AI for ${CLIENT.companyDisplay}. The user is on the "${ctxStr}" page. Answer briefly (2-4 sentences). Product data: ${JSON.stringify(CLIENT.products.map(p=>({name:p.name,signals:p.signals,problems:p.problems,open:p.open})))}. Customer data: ${JSON.stringify(CLIENT.customers.map(c=>({name:c.name,arr:c.arr,risk:c.risk,signals:c.signals})))}`;
+  const lid = 'cp' + Date.now();
+  msgs.innerHTML += `<div class="cp-msg a" id="${lid}">…</div>`;
+  msgs.scrollTop = msgs.scrollHeight;
+  popupHistory.push({ role:'user', content:val });
+  try {
+    const r = await fetch('https://api.openai.com/v1/chat/completions', {
+      method:'POST',
+      headers:{'Content-Type':'application/json','Authorization':'Bearer '+window.MARROW_OPENAI_KEY},
+      body: JSON.stringify({ model:'gpt-4o-mini', messages:[{role:'system',content:sysMsg},...popupHistory.slice(-6)], max_tokens:200 })
+    });
+    const d = await r.json();
+    const rep = d.choices?.[0]?.message?.content || 'Something went wrong.';
+    popupHistory.push({ role:'assistant', content:rep });
+    const el = $(lid); if (el) el.innerHTML = rep.replace(/\n/g,'<br>');
+  } catch(e) {
+    const el = $(lid); if (el) el.textContent = 'Error — check API key.';
+  }
+  msgs.scrollTop = msgs.scrollHeight;
+}
+</script>
 </body>
 </html>
