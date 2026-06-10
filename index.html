@@ -1,0 +1,1097 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Marrow</title>
+<script src="marrow-config.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --sidebar:#06060a; --bg:#0d0d10; --surface:#111115; --surface-2:#18181c;
+  --border:#1e1e26; --border-2:#2c2c36; --text:#f4f4f5; --text-2:#a1a1aa;
+  --text-3:#71717a; --text-4:#3f3f46; --accent:#7AF17A;
+  --accent-dim:rgba(122,241,122,.08); --accent-bdr:rgba(122,241,122,.22);
+  --red:#f87171; --red-dim:rgba(248,113,113,.08); --red-bdr:rgba(248,113,113,.22);
+  --yellow:#fbbf24; --yellow-dim:rgba(251,191,36,.08); --yellow-bdr:rgba(251,191,36,.22);
+  --r:6px; --r-lg:10px;
+}
+.light {
+  --sidebar:#ebebf0; --bg:#f5f5f8; --surface:#ffffff; --surface-2:#f0f0f5;
+  --border:#e0e0ea; --border-2:#cacad4; --text:#09090b; --text-2:#3f3f46;
+  --text-3:#71717a; --text-4:#a1a1aa; --accent:#16a34a;
+  --accent-dim:rgba(22,163,74,.07); --accent-bdr:rgba(22,163,74,.28);
+  --red:#dc2626; --red-dim:rgba(220,38,38,.07); --red-bdr:rgba(220,38,38,.22);
+  --yellow:#b45309; --yellow-dim:rgba(180,83,9,.07); --yellow-bdr:rgba(180,83,9,.22);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);height:100vh;overflow:hidden;font-size:13px;line-height:1.5;transition:background .2s,color .2s}
+button{font-family:inherit;cursor:pointer;border:none;background:none;color:inherit}
+input{font-family:inherit}
+svg{display:block;flex-shrink:0}
+::-webkit-scrollbar{width:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--border-2);border-radius:2px}
+
+/* ── LAYOUT ── */
+#app{display:flex;height:100vh;overflow:hidden}
+
+/* ── SIDEBAR ── */
+.sidebar{width:218px;min-width:218px;background:var(--sidebar);display:flex;flex-direction:column;overflow:hidden;transition:width .22s ease,min-width .22s ease;flex-shrink:0}
+.sidebar.collapsed{width:50px;min-width:50px}
+.sb-top{padding:14px 10px 8px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.sb-logo-wrap{overflow:hidden;display:flex;align-items:center;flex:1}
+.sidebar.collapsed .sb-logo-wrap{opacity:0;pointer-events:none;width:0;flex:0}
+.sb-logo-wrap svg{height:13px;width:auto}
+.sb-btn{width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:var(--r);color:var(--text-3);cursor:pointer;transition:background .12s,color .12s;flex-shrink:0}
+.sb-btn:hover{background:rgba(255,255,255,.07);color:var(--text-2)}
+.light .sb-btn:hover{background:rgba(0,0,0,.06)}
+
+.nav-items{flex:1;padding:4px 6px;overflow-y:auto;overflow-x:hidden}
+.nav-item{display:flex;align-items:center;gap:9px;padding:7px 8px;font-size:12.5px;font-weight:500;color:var(--text-3);cursor:pointer;border-radius:var(--r);transition:all .12s;margin:1px 0;white-space:nowrap;overflow:hidden;position:relative}
+.nav-item:hover{color:var(--text-2);background:rgba(255,255,255,.05)}
+.light .nav-item:hover{background:rgba(0,0,0,.05)}
+.nav-item.active{color:var(--accent);background:var(--accent-dim)}
+.nav-item svg{width:15px;height:15px;flex-shrink:0}
+.nav-lbl{overflow:hidden;transition:opacity .15s,max-width .18s;max-width:180px}
+.sidebar.collapsed .nav-lbl{opacity:0;max-width:0}
+.nav-bdg{margin-left:auto;padding:1px 6px;border-radius:10px;font-size:9px;font-weight:700;flex-shrink:0;transition:opacity .15s}
+.nav-bdg.red{background:var(--red-dim);color:var(--red)}
+.nav-bdg.green{background:var(--accent-dim);color:var(--accent);border:1px solid var(--accent-bdr)}
+.sidebar.collapsed .nav-bdg{opacity:0;pointer-events:none}
+.nav-gap{height:10px}
+
+.sb-user{padding:10px 8px;display:flex;align-items:center;gap:8px;flex-shrink:0;border-top:1px solid rgba(255,255,255,.05)}
+.light .sb-user{border-top:1px solid rgba(0,0,0,.08)}
+.avatar{width:26px;height:26px;border-radius:50%;background:var(--accent-dim);border:1px solid var(--accent-bdr);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:var(--accent);flex-shrink:0}
+.sb-uinfo{flex:1;min-width:0;overflow:hidden;transition:opacity .15s,max-width .18s}
+.sidebar.collapsed .sb-uinfo{opacity:0;max-width:0;flex:0}
+.sb-uinfo .uname{font-size:11.5px;font-weight:600;color:var(--text-2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sb-uinfo .urole{font-size:10px;color:var(--text-4)}
+.sb-icons{display:flex;gap:2px;flex-shrink:0;transition:opacity .15s}
+.sidebar.collapsed .sb-icons{opacity:0;pointer-events:none}
+.sb-icon{width:24px;height:24px;display:flex;align-items:center;justify-content:center;border-radius:var(--r);color:var(--text-4);cursor:pointer;transition:all .12s;position:relative}
+.sb-icon:hover{background:rgba(255,255,255,.07);color:var(--text-2)}
+.light .sb-icon:hover{background:rgba(0,0,0,.07)}
+.notif-dot{position:absolute;top:2px;right:2px;width:6px;height:6px;background:var(--red);border-radius:50%;border:1.5px solid var(--sidebar)}
+
+/* ── MAIN ── */
+.main{flex:1;overflow-y:auto;background:var(--bg);display:flex;flex-direction:column;transition:background .2s}
+
+/* ── TOPBAR ── */
+.topbar{padding:22px 28px 4px;flex-shrink:0;display:flex;flex-direction:column}
+.tb-back{display:inline-flex;align-items:center;gap:5px;color:var(--text-3);cursor:pointer;font-size:12px;margin-bottom:6px;transition:color .12s;width:fit-content}
+.tb-back:hover{color:var(--text-2)}
+.tb-back svg{width:12px;height:12px}
+.page-title{font-size:22px;font-weight:700;color:var(--text);letter-spacing:-.5px}
+.page-sub{font-size:12px;color:var(--text-3);margin-top:3px}
+.page-content{padding:18px 28px 28px;flex:1}
+
+/* ── SECTION HEADERS ── */
+.sec-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;margin-top:22px}
+.sec-hd:first-child{margin-top:0}
+.sec-title{font-size:11px;font-weight:600;color:var(--text-4);text-transform:uppercase;letter-spacing:.6px}
+.sec-link{font-size:11px;color:var(--text-3);cursor:pointer;transition:color .12s}
+.sec-link:hover{color:var(--accent)}
+
+/* ── DOT ── */
+.dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.dot.green{background:var(--accent)}.dot.yellow{background:var(--yellow)}.dot.red{background:var(--red)}
+
+/* ── TAG ── */
+.tag{display:inline-flex;align-items:center;gap:4px;padding:2px 7px;border-radius:4px;font-size:10px;font-weight:600}
+.tag.green{background:var(--accent-dim);color:var(--accent)}
+.tag.yellow{background:var(--yellow-dim);color:var(--yellow)}
+.tag.red{background:var(--red-dim);color:var(--red)}
+.tag.neutral{background:var(--surface-2);color:var(--text-3)}
+
+/* ── ACCORDION SHARED ── */
+.acc-body{max-height:0;overflow:hidden;transition:max-height .35s ease,opacity .25s ease;opacity:0}
+.acc-body.open{max-height:700px;opacity:1}
+
+/* ── OVERVIEW ── */
+.ov-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.ov-grid-3{grid-template-columns:1fr 1fr 1fr}
+.ov-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:18px 20px;cursor:pointer;transition:border-color .15s}
+.ov-card:hover{border-color:var(--border-2)}
+.ov-card-full{grid-column:span 2}
+.ov-card-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.ov-card-label{font-size:10px;font-weight:600;color:var(--text-4);text-transform:uppercase;letter-spacing:.6px}
+.ov-card-meta{font-size:11px;color:var(--text-3)}
+.ov-stat{font-size:28px;font-weight:700;color:var(--text);letter-spacing:-.8px;line-height:1;margin-bottom:2px}
+.ov-stat-sub{font-size:11px;color:var(--text-4);margin-bottom:12px}
+.ov-row{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--border)}
+.ov-row:last-child{border-bottom:none}
+.ov-row-name{font-size:12px;color:var(--text-2);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ov-row-val{font-size:11px;color:var(--text-3);white-space:nowrap}
+.ov-see-all{margin-top:10px;font-size:11px;color:var(--text-3);display:flex;align-items:center;gap:3px;transition:color .12s}
+.ov-see-all:hover{color:var(--accent)}
+.act-row{display:flex;gap:10px;align-items:flex-start;padding:7px 0;border-bottom:1px solid var(--border)}
+.act-row:last-child{border-bottom:none}
+.act-text{font-size:12px;color:var(--text-3);flex:1;line-height:1.5}
+.act-text span{color:var(--text-2);font-weight:500}
+.act-time{font-size:11px;color:var(--text-4);white-space:nowrap;margin-top:1px}
+
+/* ── PRODUCTS PORTFOLIO ── */
+.portfolio{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+.pf-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden;cursor:pointer;transition:border-color .15s}
+.pf-card:hover{border-color:var(--border-2)}
+.pf-card.open{border-color:var(--border-2)}
+.pf-top{padding:20px 20px 16px;display:flex;flex-direction:column;gap:12px}
+.pf-name{font-size:15px;font-weight:700;color:var(--text)}
+.pf-desc{font-size:11.5px;color:var(--text-3);line-height:1.5}
+.pf-stats{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.pf-stat-num{font-size:11px;color:var(--text-3)}
+.pf-stat-num strong{color:var(--text-2)}
+.trend-up{color:var(--accent)}.trend-dn{color:var(--red)}.trend-fl{color:var(--text-4)}
+.pf-acc{border-top:1px solid var(--border)}
+.pf-acc-inner{padding:14px 20px 18px}
+.bullet-list{list-style:none;display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
+.bullet-item{display:flex;gap:8px;font-size:12px;color:var(--text-2);line-height:1.5}
+.bullet-item::before{content:'›';color:var(--text-4);flex-shrink:0}
+.bullet-item strong{color:var(--text)}
+.view-full-btn{font-size:11.5px;font-weight:600;color:var(--accent);cursor:pointer;display:inline-flex;align-items:center;gap:5px;transition:gap .12s}
+.view-full-btn:hover{gap:8px}
+
+/* ── CUSTOMERS LIST ── */
+.list-box{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);overflow:hidden}
+.li-row{border-bottom:1px solid var(--border);cursor:pointer;transition:background .12s}
+.li-row:last-child{border-bottom:none}
+.li-row:hover{background:var(--surface-2)}
+.li-row.open{background:var(--surface-2)}
+.li-row-top{display:flex;align-items:center;gap:12px;padding:12px 18px}
+.li-av{width:32px;height:32px;border-radius:var(--r);background:var(--surface-2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:var(--text-3);flex-shrink:0;transition:all .12s}
+.li-row.open .li-av{background:var(--accent-dim);color:var(--accent);border-color:var(--accent-bdr)}
+.li-info{flex:1;min-width:0}
+.li-name{font-size:13px;font-weight:600;color:var(--text)}
+.li-meta{font-size:11px;color:var(--text-4);margin-top:1px}
+.li-right{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.arr-num{font-size:13px;font-weight:600;color:var(--text)}
+.li-acc{border-top:0 solid var(--border);transition:border-top-width 0s}
+.li-row.open .li-acc{border-top-width:1px}
+.li-acc-inner{padding:12px 18px 16px 62px}
+
+/* ── COMMUNICATION LIST ── */
+.upd-row{border-bottom:1px solid var(--border);cursor:pointer;transition:background .12s}
+.upd-row:last-child{border-bottom:none}
+.upd-row:hover{background:var(--surface-2)}
+.upd-row.open{background:var(--surface-2)}
+.upd-row-top{display:flex;align-items:center;gap:10px;padding:12px 18px}
+.upd-title{font-size:13px;font-weight:600;color:var(--text);flex:1}
+.upd-time{font-size:11px;color:var(--text-4)}
+.push-btn{padding:4px 10px;background:var(--accent-dim);border:1px solid var(--accent-bdr);border-radius:var(--r);color:var(--accent);font-size:11px;font-weight:600;cursor:pointer;transition:all .15s;flex-shrink:0}
+.push-btn:hover{background:var(--accent);color:#000}
+.upd-acc{border-top:0 solid var(--border)}
+.upd-row.open .upd-acc{border-top-width:1px}
+.upd-acc-inner{padding:12px 18px 16px}
+
+/* ── DETAIL PAGE ── */
+.detail-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.detail-grid-2{grid-template-columns:1fr 1fr}
+.stat-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:18px 20px}
+.stat-lbl{font-size:10px;font-weight:600;color:var(--text-4);text-transform:uppercase;letter-spacing:.6px;margin-bottom:8px}
+.stat-val{font-size:28px;font-weight:700;color:var(--text);letter-spacing:-1px;line-height:1;margin-bottom:3px}
+.stat-val.green{color:var(--accent)}.stat-val.red{color:var(--red)}.stat-val.yellow{color:var(--yellow)}
+.stat-sub{font-size:11px;color:var(--text-3)}
+.stat-sub.up{color:var(--accent)}.stat-sub.dn{color:var(--red)}
+
+/* CHART BARS */
+.chart-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:18px 20px;grid-column:span 2}
+.chart-lbl{font-size:11px;font-weight:600;color:var(--text-4);text-transform:uppercase;letter-spacing:.5px;margin-bottom:14px}
+.chart-row{display:flex;align-items:center;gap:10px;margin-bottom:8px}
+.chart-row:last-child{margin-bottom:0}
+.ch-label{font-size:11.5px;color:var(--text-3);width:100px;flex-shrink:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ch-bg{flex:1;height:8px;background:var(--surface-2);border-radius:4px;overflow:hidden}
+.ch-fill{height:100%;border-radius:4px;transition:width .6s ease}
+.ch-val{font-size:11px;color:var(--text-3);width:32px;text-align:right;flex-shrink:0}
+
+/* SENTIMENT BAR */
+.sent-bar-wrap{margin-top:10px}
+.sent-bar{height:8px;border-radius:4px;display:flex;overflow:hidden;gap:2px}
+.sent-seg{height:100%;border-radius:2px;transition:width .6s ease}
+.sent-legend{display:flex;gap:14px;margin-top:8px}
+.sent-leg-item{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text-3)}
+.sent-leg-dot{width:8px;height:8px;border-radius:2px;flex-shrink:0}
+
+/* TIMELINE */
+.tl-item{display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)}
+.tl-item:last-child{border-bottom:none}
+.tl-dot-col{width:14px;display:flex;justify-content:center;padding-top:5px;flex-shrink:0}
+.tl-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.tl-body{flex:1}
+.tl-title{font-size:12.5px;font-weight:600;color:var(--text);margin-bottom:2px}
+.tl-text{font-size:12px;color:var(--text-3);line-height:1.5}
+.tl-time{font-size:11px;color:var(--text-4);white-space:nowrap;padding-top:3px}
+
+/* FULL-SPAN CARD */
+.full-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:18px 20px;grid-column:1/-1}
+.full-card-lbl{font-size:11px;font-weight:600;color:var(--text-4);text-transform:uppercase;letter-spacing:.6px;margin-bottom:14px}
+
+/* KB */
+.kb-wrap{display:flex;flex-direction:column;height:100%}
+.kb-msgs{flex:1;overflow-y:auto;padding:20px 28px;display:flex;flex-direction:column;gap:14px}
+.msg{max-width:72%;padding:11px 14px;border-radius:var(--r-lg);font-size:13px;line-height:1.55}
+.msg.user{align-self:flex-end;background:var(--accent-dim);border:1px solid var(--accent-bdr);color:var(--text)}
+.msg.ai{align-self:flex-start;background:var(--surface);border:1px solid var(--border);color:var(--text-2)}
+.msg.ai strong{color:var(--text)}
+.msg-time{font-size:10px;color:var(--text-4);margin-top:4px}
+.kb-notice{padding:9px 14px;background:var(--yellow-dim);border:1px solid var(--yellow-bdr);border-radius:var(--r);font-size:12px;color:var(--yellow);margin:0 28px 14px}
+.kb-in-wrap{padding:14px 28px;border-top:1px solid var(--border);flex-shrink:0}
+.kb-in-row{display:flex;gap:8px;align-items:center;background:var(--surface);border:1px solid var(--border);border-radius:50px;padding:8px 8px 8px 16px;transition:border-color .15s}
+.kb-in-row:focus-within{border-color:var(--accent-bdr)}
+.kb-in{flex:1;background:transparent;border:none;outline:none;font-size:13px;color:var(--text)}
+.kb-in::placeholder{color:var(--text-4)}
+.kb-send{width:28px;height:28px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;cursor:pointer;border:none;transition:opacity .15s;flex-shrink:0}
+.kb-send:hover{opacity:.82}
+.kb-disc{font-size:10px;color:var(--text-4);text-align:center;margin-top:8px}
+
+/* SETTINGS */
+.stabs{display:flex;border-bottom:1px solid var(--border);margin-bottom:20px}
+.stab{padding:9px 16px;font-size:12px;font-weight:500;color:var(--text-3);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s}
+.stab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.int-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.int-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:16px;display:flex;flex-direction:column;gap:10px;transition:border-color .15s}
+.int-card:hover{border-color:var(--border-2)}
+.int-top{display:flex;align-items:center;gap:10px}
+.int-icon{width:32px;height:32px;border-radius:var(--r);background:var(--surface-2);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.int-name{font-size:13px;font-weight:600;color:var(--text)}
+.int-desc{font-size:11px;color:var(--text-4)}
+.int-row{display:flex;align-items:center;justify-content:space-between}
+.int-conn{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:600;color:var(--accent)}
+.int-conn-dot{width:6px;height:6px;border-radius:50%;background:var(--accent)}
+.conn-btn{padding:4px 11px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--r);font-size:11px;font-weight:600;color:var(--text-3);cursor:pointer;transition:all .15s}
+.conn-btn:hover{color:var(--text-2);border-color:var(--border-2)}
+.conn-btn.primary{background:var(--accent-dim);border-color:var(--accent-bdr);color:var(--accent)}
+.conn-btn.primary:hover{background:var(--accent);color:#000}
+
+/* CHAT BUBBLE */
+.chat-bubble{position:fixed;bottom:20px;right:20px;background:var(--accent);color:#000;border-radius:50px;padding:9px 16px;display:flex;align-items:center;gap:7px;font-size:12px;font-weight:700;cursor:pointer;box-shadow:0 4px 20px rgba(122,241,122,.2);z-index:200;transition:all .15s}
+.chat-bubble:hover{transform:translateY(-2px);box-shadow:0 6px 28px rgba(122,241,122,.3)}
+</style>
+</head>
+<body>
+
+<script src="marrow-config.js" onerror="window.MARROW_OPENAI_KEY=''"></script>
+<script>
+/* ══ DATA ══════════════════════════════════════════════ */
+const CLIENT = {
+  company:"bliro", companyDisplay:"bliro",
+  user:{ name:"Kilian Kutza", initials:"KK", role:"Product Manager" },
+
+  products:[
+    { id:0, name:"Notetaker", desc:"Meeting transcription & note capture across Zoom, Teams, Webex",
+      signals:12, prev:8, arr_stake:83, problems:2, requests:4, positive:6, open:4, status:"ok",
+      bullets:[
+        "<strong>Webex mobile transcription shipped in v2.4</strong> — 8 enterprise accounts auto-unlocked, zero complaints",
+        "<strong>Austrian-accent German audio</strong> causing ~15% accuracy drop — Nordwind Energy ticket #447 marked urgent by ops team",
+        "<strong>Meeting prep email timing</strong> — 5 users flagged prep arriving too late, requesting 30-min-before trigger instead of current 15-min",
+        "<strong>Most requested next feature:</strong> Summary templates per meeting type (sales call vs. standup vs. QBR)"
+      ]
+    },
+    { id:1, name:"CRM Sync", desc:"Automated field mapping between calls and Salesforce / HubSpot",
+      signals:9, prev:3, arr_stake:83, problems:6, requests:2, positive:1, open:6, status:"bad",
+      bullets:[
+        "<strong>Salesforce sandbox refresh breaks field mapping</strong> — 3 customers affected (Nordwind Energy, Mercatura, Schäfer Logistics), tickets open",
+        "<strong>Dynamics 365 sync lag</strong> 10–15 min reported by Nordwind Energy — intermittent, no root cause identified yet",
+        "<strong>SAP connector timeouts</strong> — 3 failed syncs in last 48h on accounts with large deal volumes",
+        "<strong>Top request:</strong> Ability to map custom fields per account, not just globally"
+      ]
+    },
+    { id:2, name:"Coaching Assistant", desc:"AI-powered sales coaching suggestions based on call transcripts",
+      signals:6, prev:9, arr_stake:52, problems:3, requests:2, positive:1, open:3, status:"warn",
+      bullets:[
+        "<strong>Industry-specific templates missing</strong> — Nordwind Energy requested energy-sector playbooks, current defaults feel generic",
+        "<strong>Coaching triggers feel delayed</strong> — users want real-time nudges during call, not post-call suggestions only",
+        "<strong>Declining usage trend:</strong> signals down 33% week-over-week, likely correlated with CRM Sync issues reducing trust in AI layer"
+      ]
+    },
+    { id:3, name:"Ask Bliro", desc:"Self-serve AI Q&A over your meeting history and knowledge base",
+      signals:3, prev:3, arr_stake:31, problems:1, requests:2, positive:0, open:2, status:"warn",
+      bullets:[
+        "<strong>Flat signal trend</strong> — product not gaining or losing traction, low-urgency but low-engagement concern",
+        "<strong>Top request:</strong> Integration with Notion / Confluence to answer questions from docs, not just calls",
+        "<strong>One complaint:</strong> Hallucination on sparse meeting history — needs minimum data threshold warning"
+      ]
+    }
+  ],
+
+  customers:[
+    { id:0, name:"Nordwind Energy AG", initials:"NE", arr:"€52k", arr_val:52,
+      signals:14, prev:9, industry:"Energy", risk:"high", problem_pct:64,
+      products:[0,1,2], last_contact:"3 days ago",
+      bullets:[
+        "<strong>CRM Sync field mapping failure</strong> after Salesforce sandbox refresh — 3 open tickets, their ops lead flagged it as blocking their weekly QBR prep",
+        "<strong>Notetaker Austrian-dialect accuracy</strong> — ticket #447 open, affects 4 of their reps who speak with Austrian clients",
+        "<strong>Coaching Assistant template gap</strong> — requested energy-sector-specific discovery questions in 2 separate calls",
+        "<strong>Meeting prep timing</strong> — their SDR team asked about the 30-min trigger in last week's check-in"
+      ]
+    },
+    { id:1, name:"Mercatura GmbH", initials:"MG", arr:"€31k", arr_val:31,
+      signals:9, prev:7, industry:"Retail", risk:"med", problem_pct:44,
+      products:[0,1], last_contact:"1 week ago",
+      bullets:[
+        "<strong>CRM Sync Salesforce sandbox issue</strong> — also affected, less urgent than Nordwind, 1 open ticket",
+        "<strong>Notetaker meeting prep</strong> — positive feedback on v2.4 Webex support, their team uses Webex heavily",
+        "<strong>Feature request:</strong> Bulk export of meeting summaries to PDF for board reporting"
+      ]
+    },
+    { id:2, name:"Schäfer Logistics", initials:"SL", arr:"€19k", arr_val:19,
+      signals:6, prev:5, industry:"Logistics", risk:"low", problem_pct:33,
+      products:[0,1], last_contact:"5 days ago",
+      bullets:[
+        "<strong>CRM Sync affected</strong> by Salesforce sandbox issue — 1 ticket, lower priority than Nordwind",
+        "<strong>Notetaker satisfaction high</strong> — 2 positive signals, they use it for their daily driver review calls",
+        "<strong>Expansion signal:</strong> Asked about seat pricing for 5 additional reps"
+      ]
+    },
+    { id:3, name:"Konrad & Bremer", initials:"KB", arr:"€11k", arr_val:11,
+      signals:4, prev:4, industry:"Consulting", risk:"low", problem_pct:25,
+      products:[0,3], last_contact:"1 week ago",
+      bullets:[
+        "<strong>Ask Bliro feedback</strong> — one complaint about hallucinated answer citing a meeting that didn't exist",
+        "<strong>Notetaker positive</strong> — their team likes the summary quality for client meeting notes",
+        "<strong>No urgent actions</strong> — stable account, low churn risk"
+      ]
+    }
+  ],
+
+  updates:[
+    { id:0, sev:"red",    title:"CRM Sync reliability drop",
+      desc:"3 customers reported missed field updates after Salesforce sandbox refresh.",
+      time:"2h", pushed:false,
+      bullets:[
+        "<strong>Root cause:</strong> Salesforce sandbox refresh resets custom field metadata — our sync agent doesn't re-authenticate field mappings post-refresh",
+        "<strong>Impacted accounts:</strong> Nordwind Energy (€52k ARR), Mercatura GmbH (€31k), Schäfer Logistics (€19k) — total €102k ARR exposed",
+        "<strong>Suggested Slack message:</strong> 'CRM Sync field mapping issue identified. Engineering has a fix in review (ENG-441). ETA: today EOD. Affected accounts notified.'",
+        "<strong>Suggested customer email:</strong> 'We identified an issue affecting CRM Sync after Salesforce sandbox refreshes. A fix is in review and we'll update you by EOD today.'"
+      ]
+    },
+    { id:1, sev:"red",    title:"Transcript accuracy: dialect audio",
+      desc:"Austrian-accent German audio triggers ~15% accuracy drop. Nordwind Energy ticket #447 urgent.",
+      time:"4h", pushed:false,
+      bullets:[
+        "<strong>Issue:</strong> Whisper model variant used has lower accuracy on Austrian-German phonemes vs. standard German",
+        "<strong>One customer affected:</strong> Nordwind Energy, 4 reps impacted — their highest-ARR account",
+        "<strong>Fix path:</strong> Switch to larger Whisper model for DE-AT locale detection, or add manual language override",
+        "<strong>Suggested communication:</strong> Direct email to Nordwind Energy ops lead acknowledging the issue with ETA"
+      ]
+    },
+    { id:2, sev:"yellow", title:"Coaching Assistant: playbook gap",
+      desc:"Nordwind Energy requested industry-specific templates.",
+      time:"8h", pushed:false,
+      bullets:[
+        "<strong>Request pattern:</strong> 2 separate mentions in calls, 1 ticket — energy sector discovery questions are too generic",
+        "<strong>Effort to fix:</strong> Low — 5-10 industry template presets could be added in one sprint",
+        "<strong>Revenue signal:</strong> If Coaching Assistant improves, expansion signal from Nordwind Energy (asked about 2 more seats)"
+      ]
+    },
+    { id:3, sev:"yellow", title:"Meeting prep timing issue",
+      desc:"5 users flagged prep emails arrive too late. Requesting 30-min trigger.",
+      time:"1d", pushed:false,
+      bullets:[
+        "<strong>Current behavior:</strong> Prep email sends 15 min before meeting — not enough time for users to review",
+        "<strong>Requested:</strong> 30-min trigger as default, with user-configurable timing",
+        "<strong>Affected users across:</strong> Nordwind Energy, Mercatura GmbH — both mentioned in separate calls"
+      ]
+    },
+    { id:4, sev:"green",  title:"Notetaker v2.4 shipped",
+      desc:"Webex mobile transcription added. 8 enterprise accounts unlocked automatically.",
+      time:"1d", pushed:true,
+      bullets:[
+        "<strong>Impact:</strong> 8 accounts that were blocked on Webex mobile now have full transcription — zero config needed",
+        "<strong>Positive signals:</strong> Mercatura GmbH already sent a thumbs-up in Slack",
+        "<strong>Comms already pushed:</strong> Slack #product update sent, LinkedIn post drafted"
+      ]
+    }
+  ],
+
+  activity:[
+    { text:"Transcript processed — Nordwind Energy sales call, <span>3 signals extracted</span>", time:"just now" },
+    { text:"Slack pushed to <span>#product</span> and <span>#sales</span> — 24 members reached", time:"12 min" },
+    { text:"<span>CRM Sync failure alert</span> — Mercatura GmbH Salesforce sandbox", time:"38 min" }
+  ],
+
+  comms:{ pending:2, pushed:8 }
+};
+
+/* ── COMPUTED ── */
+const totalSignals = () => CLIENT.customers.reduce((a,c)=>a+c.signals,0);
+const urgency = p => p.problems * p.arr_stake;
+const sortedProducts = () => [...CLIENT.products].sort((a,b)=>urgency(b)-urgency(a));
+const topProduct = () => sortedProducts()[0];
+const pendingUpdates = () => CLIENT.updates.filter(u=>!u.pushed).length;
+const trendPct = (cur,prev) => prev===0?null:Math.round(((cur-prev)/prev)*100);
+const trendStr = (cur,prev) => {
+  const p = trendPct(cur,prev);
+  if(p===null) return '';
+  if(p>0) return `<span class="trend-up">↑${p}%</span>`;
+  if(p<0) return `<span class="trend-dn">↓${Math.abs(p)}%</span>`;
+  return `<span class="trend-fl">—</span>`;
+};
+const statusClass = s => s==='ok'?'green':s==='bad'?'red':'yellow';
+const statusLabel = s => s==='ok'?'Healthy':s==='bad'?'Needs attention':'Monitor';
+const riskClass = r => r==='high'?'tag red':r==='med'?'tag yellow':'tag green';
+const dot = sev => ({red:'var(--red)',yellow:'var(--yellow)',green:'var(--accent)'})[sev]||'#888';
+
+/* ── STATE ── */
+let isDark = true;
+let sidebarCollapsed = false;
+let currentPage = 'overview';
+let detailId = null;
+let detailType = null;
+let settingsTab = 'integrations';
+let kbHistory = [
+  { role:'system', content:`You are Marrow, an AI product management assistant for ${CLIENT.companyDisplay}. You help PMs understand product signals, customer health, and what to prioritize. Be concise and specific. Data context: ${JSON.stringify({products:CLIENT.products.map(p=>({name:p.name,signals:p.signals,problems:p.problems,open:p.open})),customers:CLIENT.customers.map(c=>({name:c.name,arr:c.arr,risk:c.risk,signals:c.signals}))})}` }
+];
+
+/* ── HELPERS ── */
+const $ = id => document.getElementById(id);
+const svgIcon = (d, sz=15) => `<svg width="${sz}" height="${sz}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7">${d}</svg>`;
+const ICONS = {
+  overview: `<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>`,
+  products: `<path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>`,
+  customers: `<path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>`,
+  communication: `<path d="M22 2L11 13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>`,
+  kb: `<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>`,
+  settings: `<circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/>`,
+  chevron: `<polyline points="9 18 15 12 9 6"/>`,
+  back: `<polyline points="15 18 9 12 15 6"/>`,
+  bell: `<path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/>`,
+  sun: `<circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>`,
+  moon: `<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>`,
+  send: `<line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>`,
+  plus: `<line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>`,
+  mic: `<path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/>`,
+};
+
+/* ── TOGGLE THEME ── */
+function toggleTheme() {
+  isDark = !isDark;
+  document.body.classList.toggle('light', !isDark);
+  $('theme-icon').innerHTML = svgIcon(isDark ? ICONS.sun : ICONS.moon, 13);
+}
+
+/* ── TOGGLE SIDEBAR ── */
+function toggleSidebar() {
+  sidebarCollapsed = !sidebarCollapsed;
+  $('sidebar').classList.toggle('collapsed', sidebarCollapsed);
+  $('collapse-icon').innerHTML = svgIcon(sidebarCollapsed ? ICONS.chevron : ICONS.back, 14);
+}
+
+/* ── ACCORDION TOGGLE ── */
+function toggleAcc(el) {
+  const body = el.querySelector('.acc-body, .pf-acc, .li-acc, .upd-acc');
+  const isOpen = el.classList.contains('open');
+  el.classList.toggle('open', !isOpen);
+  if (!isOpen) { body.style.maxHeight = body.scrollHeight + 'px'; body.style.opacity='1'; }
+  else { body.style.maxHeight='0'; body.style.opacity='0'; }
+}
+
+/* ── NAV ── */
+function navTo(page, id=null, type=null) {
+  currentPage = page;
+  detailId = id;
+  detailType = type;
+  document.querySelectorAll('.nav-item').forEach(n => {
+    const base = page.replace('-detail','');
+    n.classList.toggle('active', n.dataset.page === (page==='kb'?'kb': page==='settings'?'settings': base==='overview'?'overview': base));
+  });
+  if (page === 'settings') { renderSettings(); return; }
+  const fn = {
+    overview: pageOverview, products: pageProducts,
+    customers: pageCustomers, communication: pageCommunication, kb: pageKB,
+    'product-detail': ()=>pageProductDetail(id),
+    'customer-detail': ()=>pageCustomerDetail(id),
+    'update-detail': ()=>pageUpdateDetail(id),
+  }[page];
+  if (fn) $('main').innerHTML = fn();
+}
+
+/* ── TOPBAR ── */
+function topbar(title, sub='', backPage=null) {
+  return `<div class="topbar">
+    ${backPage ? `<div class="tb-back" onclick="navTo('${backPage}')">${svgIcon(ICONS.back,12)} Back</div>` : ''}
+    <div class="page-title">${title}</div>
+    ${sub ? `<div class="page-sub">${sub}</div>` : ''}
+  </div>`;
+}
+
+/* ══ PAGES ═══════════════════════════════════════════════ */
+
+/* OVERVIEW */
+function pageOverview() {
+  const sp = sortedProducts();
+  const prodRows = sp.slice(0,3).map(p=>`
+    <div class="ov-row">
+      <div class="dot ${statusClass(p.status)}"></div>
+      <span class="ov-row-name">${p.name}</span>
+      <span class="ov-row-val">${trendStr(p.signals,p.prev)} ${p.signals} signals</span>
+    </div>`).join('');
+
+  const custRows = [...CLIENT.customers].sort((a,b)=>b.signals-a.signals).slice(0,3).map(c=>`
+    <div class="ov-row">
+      <div class="dot ${c.risk==='high'?'red':c.risk==='med'?'yellow':'green'}"></div>
+      <span class="ov-row-name">${c.name}</span>
+      <span class="ov-row-val">${c.arr}</span>
+    </div>`).join('');
+
+  const updRows = CLIENT.updates.filter(u=>!u.pushed).slice(0,3).map(u=>`
+    <div class="ov-row">
+      <div class="dot ${u.sev}"></div>
+      <span class="ov-row-name">${u.title}</span>
+      <span class="ov-row-val">${u.time} ago</span>
+    </div>`).join('');
+
+  const actRows = CLIENT.activity.map(a=>`
+    <div class="act-row">
+      <div class="dot green" style="margin-top:5px"></div>
+      <div class="act-text">${a.text}</div>
+      <div class="act-time">${a.time}</div>
+    </div>`).join('');
+
+  return `
+  ${topbar(`Welcome back, ${CLIENT.user.name.split(' ')[0]}`,'','')}
+  <div class="page-content">
+    <div class="ov-grid" style="margin-bottom:14px">
+      <div class="ov-card" onclick="navTo('products')">
+        <div class="ov-card-head">
+          <span class="ov-card-label">Products</span>
+          <span class="ov-card-meta">${CLIENT.products.length} active</span>
+        </div>
+        <div class="ov-stat">${sp[0].name}</div>
+        <div class="ov-stat-sub">highest urgency this week · €${sp[0].arr_stake}k ARR at stake</div>
+        ${prodRows}
+        <div class="ov-see-all" onclick="event.stopPropagation();navTo('products')">View all products ${svgIcon(ICONS.chevron,10)}</div>
+      </div>
+      <div class="ov-card" onclick="navTo('customers')">
+        <div class="ov-card-head">
+          <span class="ov-card-label">Customers</span>
+          <span class="ov-card-meta">${totalSignals()} signals this week</span>
+        </div>
+        <div class="ov-stat">${totalSignals()}</div>
+        <div class="ov-stat-sub">signals this week ${trendStr(totalSignals(), CLIENT.customers.reduce((a,c)=>a+c.prev,0))}</div>
+        ${custRows}
+        <div class="ov-see-all" onclick="event.stopPropagation();navTo('customers')">View all customers ${svgIcon(ICONS.chevron,10)}</div>
+      </div>
+    </div>
+    <div class="ov-grid" style="margin-bottom:14px">
+      <div class="ov-card" onclick="navTo('communication')">
+        <div class="ov-card-head">
+          <span class="ov-card-label">Communication</span>
+          <span class="ov-card-meta">${pendingUpdates()} pending</span>
+        </div>
+        <div class="ov-stat">${pendingUpdates()}</div>
+        <div class="ov-stat-sub">updates not yet pushed · ${CLIENT.comms.pushed} pushed this week</div>
+        ${updRows}
+        <div class="ov-see-all" onclick="event.stopPropagation();navTo('communication')">View all updates ${svgIcon(ICONS.chevron,10)}</div>
+      </div>
+      <div class="ov-card" style="cursor:default">
+        <div class="ov-card-head">
+          <span class="ov-card-label">Live Activity</span>
+          <span class="ov-card-meta">real-time</span>
+        </div>
+        ${actRows}
+      </div>
+    </div>
+  </div>`;
+}
+
+/* PRODUCTS */
+function pageProducts() {
+  const cards = sortedProducts().map(p => {
+    const sentTotal = p.problems + p.requests + p.positive;
+    const pPct = sentTotal ? Math.round(p.problems/sentTotal*100) : 0;
+    return `
+    <div class="pf-card" id="pf-${p.id}" onclick="togglePfCard(${p.id},event)">
+      <div class="pf-top">
+        <div>
+          <div class="pf-name">${p.name}</div>
+          <div class="pf-desc" style="margin-top:5px">${p.desc}</div>
+        </div>
+        <div class="pf-stats">
+          <span class="tag ${statusClass(p.status)}">${statusLabel(p.status)}</span>
+          <span class="pf-stat-num"><strong>€${p.arr_stake}k</strong> ARR at stake</span>
+          <span class="pf-stat-num">${p.signals} signals ${trendStr(p.signals,p.prev)}</span>
+          <span class="pf-stat-num">${p.open} open actions</span>
+          <span class="pf-stat-num" style="color:var(--red)">${pPct}% problems</span>
+        </div>
+      </div>
+      <div class="acc-body pf-acc">
+        <div class="pf-acc-inner">
+          <ul class="bullet-list">
+            ${p.bullets.map(b=>`<li class="bullet-item">${b}</li>`).join('')}
+          </ul>
+          <div class="view-full-btn" onclick="event.stopPropagation();navTo('product-detail',${p.id})">
+            View full product ${svgIcon(ICONS.chevron,12)}
+          </div>
+        </div>
+      </div>
+    </div>`}).join('');
+
+  return `
+  ${topbar('Products', `${CLIENT.products.length} products · ${CLIENT.companyDisplay}`)}
+  <div class="page-content">
+    <div class="portfolio">${cards}</div>
+  </div>`;
+}
+
+function togglePfCard(id, e) {
+  const card = $(`pf-${id}`);
+  const body = card.querySelector('.acc-body');
+  const isOpen = card.classList.contains('open');
+  card.classList.toggle('open', !isOpen);
+  body.style.maxHeight = isOpen ? '0' : body.scrollHeight + 'px';
+  body.style.opacity = isOpen ? '0' : '1';
+}
+
+/* PRODUCT DETAIL */
+function pageProductDetail(id) {
+  const p = CLIENT.products[id];
+  const total = p.problems + p.requests + p.positive;
+  const custs = CLIENT.customers.filter(c=>c.products.includes(id));
+  const prPct = total ? Math.round(p.problems/total*100) : 0;
+  const rqPct = total ? Math.round(p.requests/total*100) : 0;
+  const poPct = total ? Math.round(p.positive/total*100) : 0;
+  const trend = trendPct(p.signals, p.prev);
+
+  return `
+  ${topbar(p.name, p.desc, 'products')}
+  <div class="page-content">
+    <div class="detail-grid" style="margin-bottom:14px">
+      <div class="stat-card">
+        <div class="stat-lbl">ARR at stake</div>
+        <div class="stat-val">€${p.arr_stake}k</div>
+        <div class="stat-sub">${custs.length} customer${custs.length!==1?'s':''} using this product</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-lbl">Signals this week</div>
+        <div class="stat-val ${trend>0?'red':trend<0?'green':''}">${p.signals}</div>
+        <div class="stat-sub ${trend>0?'dn':trend<0?'up':''}">${trend>0?'↑':'↓'}${Math.abs(trend||0)}% vs last week</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-lbl">Open actions</div>
+        <div class="stat-val ${p.open>3?'red':'yellow'}">${p.open}</div>
+        <div class="stat-sub">unresolved problems &amp; requests</div>
+      </div>
+    </div>
+
+    <div class="detail-grid" style="grid-template-columns:1fr 1fr;margin-bottom:14px">
+      <div class="stat-card">
+        <div class="stat-lbl">Signal sentiment</div>
+        <div style="margin-top:4px">
+          <div class="chart-row"><span class="ch-label">Problems</span><div class="ch-bg"><div class="ch-fill" style="width:${prPct}%;background:var(--red)"></div></div><span class="ch-val">${p.problems}</span></div>
+          <div class="chart-row"><span class="ch-label">Requests</span><div class="ch-bg"><div class="ch-fill" style="width:${rqPct}%;background:var(--yellow)"></div></div><span class="ch-val">${p.requests}</span></div>
+          <div class="chart-row"><span class="ch-label">Positive</span><div class="ch-bg"><div class="ch-fill" style="width:${poPct}%;background:var(--accent)"></div></div><span class="ch-val">${p.positive}</span></div>
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-lbl">Customers using this product</div>
+        <div style="margin-top:6px;display:flex;flex-direction:column;gap:8px">
+          ${custs.map(c=>`
+            <div style="display:flex;align-items:center;gap:10px;cursor:pointer" onclick="navTo('customer-detail',${c.id})">
+              <div class="li-av" style="width:28px;height:28px;font-size:9px">${c.initials}</div>
+              <div style="flex:1;min-width:0"><div style="font-size:12px;font-weight:600;color:var(--text)">${c.name}</div><div style="font-size:11px;color:var(--text-4)">${c.arr}</div></div>
+              <span class="${riskClass(c.risk)}">${c.risk.toUpperCase()}</span>
+            </div>`).join('')}
+        </div>
+      </div>
+    </div>
+
+    <div class="full-card">
+      <div class="full-card-lbl">Key signals this week</div>
+      <div class="timeline">
+        ${p.bullets.map(b=>`
+          <div class="tl-item">
+            <div class="tl-dot-col"><div class="tl-dot" style="background:var(--${b.includes('shipped')||b.includes('positive')||b.includes('fast')?'accent':b.includes('request')||b.includes('Request')?'yellow':'red'})"></div></div>
+            <div class="tl-body"><div class="tl-text">${b}</div></div>
+          </div>`).join('')}
+      </div>
+    </div>
+  </div>`;
+}
+
+/* CUSTOMERS */
+function pageCustomers() {
+  const sorted = [...CLIENT.customers].sort((a,b)=>b.arr_val-a.arr_val);
+  const rows = sorted.map(c => `
+    <div class="li-row" id="li-c-${c.id}" onclick="toggleListRow('li-c-${c.id}')">
+      <div class="li-row-top">
+        <div class="li-av">${c.initials}</div>
+        <div class="li-info">
+          <div class="li-name">${c.name}</div>
+          <div class="li-meta">${c.industry} · ${c.signals} signals ${trendStr(c.signals,c.prev)}</div>
+        </div>
+        <div class="li-right">
+          <span class="arr-num">${c.arr}</span>
+          <span class="${riskClass(c.risk)}">${c.risk.toUpperCase()}</span>
+        </div>
+      </div>
+      <div class="acc-body li-acc">
+        <div class="li-acc-inner">
+          <ul class="bullet-list" style="margin-bottom:10px">
+            ${c.bullets.map(b=>`<li class="bullet-item">${b}</li>`).join('')}
+          </ul>
+          <div class="view-full-btn" onclick="event.stopPropagation();navTo('customer-detail',${c.id})">
+            View full profile ${svgIcon(ICONS.chevron,12)}
+          </div>
+        </div>
+      </div>
+    </div>`).join('');
+
+  return `
+  ${topbar('Customers', `${CLIENT.customers.reduce((a,c)=>a+c.signals,0)} signals this week across ${CLIENT.customers.length} accounts`)}
+  <div class="page-content">
+    <div class="list-box">${rows}</div>
+  </div>`;
+}
+
+function toggleListRow(id) {
+  const row = $(id);
+  const body = row.querySelector('.acc-body');
+  const isOpen = row.classList.contains('open');
+  row.classList.toggle('open', !isOpen);
+  body.style.maxHeight = isOpen ? '0' : body.scrollHeight + 'px';
+  body.style.opacity = isOpen ? '0' : '1';
+}
+
+/* CUSTOMER DETAIL */
+function pageCustomerDetail(id) {
+  const c = CLIENT.customers[id];
+  const prods = c.products.map(i => CLIENT.products[i]);
+  const trend = trendPct(c.signals, c.prev);
+
+  return `
+  ${topbar(c.name, `${c.industry} · Last contact ${c.last_contact}`, 'customers')}
+  <div class="page-content">
+    <div class="detail-grid" style="margin-bottom:14px">
+      <div class="stat-card">
+        <div class="stat-lbl">ARR</div>
+        <div class="stat-val">${c.arr}</div>
+        <div class="stat-sub">annual contract value</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-lbl">Signals this week</div>
+        <div class="stat-val ${trend>10?'red':trend<-10?'green':''}">${c.signals}</div>
+        <div class="stat-sub ${trend>0?'dn':trend<0?'up':''}">${trend>0?'↑':'↓'}${Math.abs(trend||0)}% vs last week</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-lbl">Churn risk</div>
+        <div class="stat-val ${c.risk==='high'?'red':c.risk==='med'?'yellow':'green'}">${c.risk.toUpperCase()}</div>
+        <div class="stat-sub">${c.problem_pct}% of signals are problems</div>
+      </div>
+    </div>
+
+    <div class="detail-grid" style="grid-template-columns:1fr 1fr;margin-bottom:14px">
+      <div class="stat-card">
+        <div class="stat-lbl">Products used</div>
+        <div style="margin-top:8px;display:flex;flex-direction:column;gap:8px">
+          ${prods.map(p=>`
+            <div style="display:flex;align-items:center;gap:10px;cursor:pointer" onclick="navTo('product-detail',${p.id})">
+              <div style="flex:1"><div style="font-size:12px;font-weight:600;color:var(--text)">${p.name}</div><div style="font-size:11px;color:var(--text-4)">${p.signals} signals this week</div></div>
+              <span class="tag ${statusClass(p.status)}">${statusLabel(p.status)}</span>
+            </div>`).join('')}
+        </div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-lbl">Signal breakdown</div>
+        <div style="margin-top:8px">
+          <div class="chart-row"><span class="ch-label">Problems</span><div class="ch-bg"><div class="ch-fill" style="width:${c.problem_pct}%;background:var(--red)"></div></div><span class="ch-val">${Math.round(c.signals*c.problem_pct/100)}</span></div>
+          <div class="chart-row"><span class="ch-label">Requests</span><div class="ch-bg"><div class="ch-fill" style="width:${Math.max(0,100-c.problem_pct-20)}%;background:var(--yellow)"></div></div><span class="ch-val">${Math.max(0,Math.round(c.signals*0.2))}</span></div>
+          <div class="chart-row"><span class="ch-label">Positive</span><div class="ch-bg"><div class="ch-fill" style="width:${Math.max(0,20-c.problem_pct/4)}%;background:var(--accent)"></div></div><span class="ch-val">${Math.max(0,c.signals-Math.round(c.signals*c.problem_pct/100)-Math.round(c.signals*0.2))}</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="full-card">
+      <div class="full-card-lbl">Key signals from this account</div>
+      <div class="timeline">
+        ${c.bullets.map(b=>`
+          <div class="tl-item">
+            <div class="tl-dot-col"><div class="tl-dot" style="background:var(--${b.toLowerCase().includes('positive')||b.includes('expansion')||b.includes('Positive')?'accent':b.includes('request')||b.includes('Request')?'yellow':'red'})"></div></div>
+            <div class="tl-body"><div class="tl-text">${b}</div></div>
+          </div>`).join('')}
+      </div>
+    </div>
+  </div>`;
+}
+
+/* COMMUNICATION */
+function pageCommunication() {
+  const rows = CLIENT.updates.map(u => `
+    <div class="upd-row" id="upd-${u.id}" onclick="toggleUpdRow(${u.id})">
+      <div class="upd-row-top">
+        <div class="dot ${u.sev}" style="margin-top:2px;flex-shrink:0"></div>
+        <div style="flex:1;min-width:0">
+          <div class="upd-title">${u.title}</div>
+          <div style="font-size:11px;color:var(--text-4);margin-top:1px">${u.time} ago${u.pushed?' · Pushed':'· Not pushed'}</div>
+        </div>
+        ${!u.pushed ? `<button class="push-btn" onclick="event.stopPropagation()">Push update</button>` : `<span class="tag green">Pushed</span>`}
+      </div>
+      <div class="acc-body upd-acc">
+        <div class="upd-acc-inner">
+          <ul class="bullet-list" style="margin-bottom:10px">
+            ${u.bullets.map(b=>`<li class="bullet-item">${b}</li>`).join('')}
+          </ul>
+          <div style="display:flex;align-items:center;justify-content:space-between">
+            <div style="display:flex;gap:6px">
+              <span class="tag neutral">${svgIcon(ICONS.communication,10)} Push via Slack</span>
+              <span class="tag neutral">LinkedIn</span>
+              <span class="tag neutral">Newsletter</span>
+            </div>
+            <div class="view-full-btn" onclick="event.stopPropagation();navTo('update-detail',${u.id})">
+              View full ${svgIcon(ICONS.chevron,12)}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>`).join('');
+
+  return `
+  ${topbar('Communication', `${pendingUpdates()} pending · ${CLIENT.comms.pushed} pushed this week`)}
+  <div class="page-content">
+    <div style="display:flex;gap:8px;margin-bottom:16px">
+      <button onclick="alert('Upload transcript')" style="display:flex;align-items:center;gap:7px;padding:8px 14px;border:1px dashed var(--border-2);border-radius:var(--r-lg);color:var(--text-4);font-size:12px;font-weight:500;cursor:pointer;background:transparent;transition:all .15s" onmouseover="this.style.borderColor='var(--accent-bdr)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border-2)';this.style.color='var(--text-4)'">
+        ${svgIcon(ICONS.plus,13)} Upload transcript
+      </button>
+      <button onclick="alert('Voice memo')" style="display:flex;align-items:center;gap:7px;padding:8px 14px;border:1px dashed var(--border-2);border-radius:var(--r-lg);color:var(--text-4);font-size:12px;font-weight:500;cursor:pointer;background:transparent;transition:all .15s" onmouseover="this.style.borderColor='var(--accent-bdr)';this.style.color='var(--accent)'" onmouseout="this.style.borderColor='var(--border-2)';this.style.color='var(--text-4)'">
+        ${svgIcon(ICONS.mic,13)} Voice memo
+      </button>
+    </div>
+    <div class="list-box">${rows}</div>
+  </div>`;
+}
+
+function toggleUpdRow(id) {
+  const row = $(`upd-${id}`);
+  const body = row.querySelector('.acc-body');
+  const isOpen = row.classList.contains('open');
+  row.classList.toggle('open', !isOpen);
+  body.style.maxHeight = isOpen ? '0' : body.scrollHeight + 'px';
+  body.style.opacity = isOpen ? '0' : '1';
+}
+
+/* UPDATE DETAIL */
+function pageUpdateDetail(id) {
+  const u = CLIENT.updates[id];
+  return `
+  ${topbar(u.title, `${u.sev.toUpperCase()} · ${u.time} ago`, 'communication')}
+  <div class="page-content">
+    <div class="detail-grid" style="grid-template-columns:1fr 1fr 1fr;margin-bottom:14px">
+      <div class="stat-card">
+        <div class="stat-lbl">Severity</div>
+        <div class="stat-val ${u.sev}">${u.sev==='red'?'Major':u.sev==='yellow'?'Notable':'Resolved'}</div>
+        <div class="stat-sub">${u.time} ago</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-lbl">Push status</div>
+        <div class="stat-val ${u.pushed?'green':'yellow'}">${u.pushed?'Pushed':'Pending'}</div>
+        <div class="stat-sub">${u.pushed?'Communicated to team':'Not yet communicated'}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-lbl">Channels</div>
+        <div style="margin-top:8px;display:flex;flex-direction:column;gap:6px">
+          <div style="display:flex;align-items:center;gap:8px">
+            <span class="tag neutral">Slack #product</span>
+            ${u.pushed?`<span class="tag green">Sent</span>`:`<button class="push-btn">Push now</button>`}
+          </div>
+          <span class="tag neutral" style="width:fit-content">LinkedIn</span>
+          <span class="tag neutral" style="width:fit-content">Newsletter</span>
+        </div>
+      </div>
+    </div>
+    <div class="full-card">
+      <div class="full-card-lbl">AI analysis</div>
+      <div class="timeline">
+        ${u.bullets.map(b=>`
+          <div class="tl-item">
+            <div class="tl-dot-col"><div class="tl-dot" style="background:var(--${b.includes('Positive')||b.includes('already pushed')?'accent':b.includes('request')||b.includes('Suggested')?'yellow':'red'})"></div></div>
+            <div class="tl-body"><div class="tl-text">${b}</div></div>
+          </div>`).join('')}
+      </div>
+    </div>
+  </div>`;
+}
+
+/* KNOWLEDGE BASE */
+function pageKB() {
+  const hasKey = window.MARROW_OPENAI_KEY && !window.MARROW_OPENAI_KEY.includes('paste');
+  const msgs = kbHistory.filter(m=>m.role!=='system').map(m => `
+    <div class="msg ${m.role==='user'?'user':'ai'}">${m.content}<div class="msg-time">${m.role==='user'?'You':'Marrow · just now'}</div></div>`).join('');
+
+  return `
+  ${topbar('Knowledge Base', `Ask anything about ${CLIENT.companyDisplay}`)}
+  ${!hasKey ? `<div class="kb-notice">Add your OpenAI key to marrow-config.js to enable live AI responses.</div>` : ''}
+  <div class="kb-wrap">
+    <div class="kb-msgs" id="kb-msgs">
+      <div style="text-align:center;padding:16px 0 8px"><div style="font-size:12px;color:var(--text-4)">Ask about ${CLIENT.companyDisplay}'s products, customers, or signals</div></div>
+      ${msgs}
+    </div>
+    <div class="kb-in-wrap">
+      <div class="kb-in-row">
+        <input class="kb-in" id="kb-in" placeholder="Ask about products, customers, or signals..." onkeydown="if(event.key==='Enter')sendMsg()">
+        <button class="kb-send" onclick="sendMsg()">${svgIcon(ICONS.send,13).replace('currentColor','#000')}</button>
+      </div>
+      <div class="kb-disc">Answers grounded in your product data · Powered by Marrow AI</div>
+    </div>
+  </div>`;
+}
+
+async function sendMsg() {
+  const inp = $('kb-in');
+  const val = inp.value.trim();
+  if (!val) return;
+  inp.value = '';
+  const msgs = $('kb-msgs');
+  msgs.innerHTML += `<div class="msg user">${val}<div class="msg-time">You</div></div>`;
+  msgs.scrollTop = msgs.scrollHeight;
+  kbHistory.push({ role:'user', content:val });
+
+  const hasKey = window.MARROW_OPENAI_KEY && !window.MARROW_OPENAI_KEY.includes('paste');
+  if (!hasKey) {
+    const reply = 'Please add your OpenAI API key to marrow-config.js to enable live responses.';
+    msgs.innerHTML += `<div class="msg ai">${reply}<div class="msg-time">Marrow</div></div>`;
+    msgs.scrollTop = msgs.scrollHeight;
+    return;
+  }
+
+  const loadId = 'load-' + Date.now();
+  msgs.innerHTML += `<div class="msg ai" id="${loadId}"><span style="color:var(--text-4)">Thinking…</span></div>`;
+  msgs.scrollTop = msgs.scrollHeight;
+
+  try {
+    const res = await fetch('https://api.openai.com/v1/chat/completions', {
+      method:'POST',
+      headers:{ 'Content-Type':'application/json', 'Authorization':'Bearer '+window.MARROW_OPENAI_KEY },
+      body: JSON.stringify({ model:'gpt-4o-mini', messages: kbHistory, max_tokens:600 })
+    });
+    const data = await res.json();
+    const reply = data.choices?.[0]?.message?.content || 'Sorry, something went wrong.';
+    kbHistory.push({ role:'assistant', content:reply });
+    const el = $(loadId);
+    if (el) el.innerHTML = reply.replace(/\n/g,'<br>') + `<div class="msg-time">Marrow</div>`;
+  } catch(e) {
+    const el = $(loadId);
+    if (el) el.innerHTML = 'Error connecting to OpenAI. Check your API key.<div class="msg-time">Marrow</div>';
+  }
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+/* SETTINGS */
+const integrations = [
+  { name:'Notion',    icon:'📝', desc:'Knowledge base sync',  connected:false },
+  { name:'Slack',     icon:'💬', desc:'Push notifications',   connected:true, detail:'workspace: bliro-team' },
+  { name:'Gmail',     icon:'📧', desc:'Email signal capture', connected:false },
+  { name:'Salesforce',icon:'☁️', desc:'CRM data source',      connected:false },
+  { name:'HubSpot',   icon:'🔶', desc:'CRM & deal tracking',  connected:false },
+  { name:'Linear',    icon:'⬡',  desc:'Engineering context',  connected:false },
+  { name:'GitHub',    icon:'⚙️', desc:'Shipping signals',     connected:false },
+  { name:'n8n',       icon:'⚡', desc:'Workflow automation',  connected:true, detail:'Slack cartoon workflow' },
+  { name:'Zapier',    icon:'⚡', desc:'Generic automation',   connected:false },
+];
+
+function renderSettings() {
+  const intCards = integrations.map(i=>`
+    <div class="int-card">
+      <div class="int-top">
+        <div class="int-icon">${i.icon}</div>
+        <div><div class="int-name">${i.name}</div><div class="int-desc">${i.desc}</div></div>
+      </div>
+      <div class="int-row">
+        ${i.connected
+          ? `<div class="int-conn"><div class="int-conn-dot"></div>Connected${i.detail?` · <span style="font-weight:400;color:var(--text-4)">${i.detail}</span>`:''}</div><button class="conn-btn">Manage</button>`
+          : `<div style="font-size:11px;color:var(--text-4)">Not connected</div><button class="conn-btn primary">Connect</button>`}
+      </div>
+    </div>`).join('');
+
+  $('main').innerHTML = `
+  ${topbar('Settings')}
+  <div class="page-content">
+    <div class="stabs">
+      <div class="stab ${settingsTab==='general'?'active':''}" onclick="settingsTab='general';renderSettings()">General</div>
+      <div class="stab ${settingsTab==='integrations'?'active':''}" onclick="settingsTab='integrations';renderSettings()">Integrations</div>
+      <div class="stab ${settingsTab==='notifications'?'active':''}" onclick="settingsTab='notifications';renderSettings()">Notifications</div>
+    </div>
+    ${settingsTab==='integrations' ? `<div class="int-grid">${intCards}</div>` : `
+      <div class="stat-card" style="margin-bottom:10px">
+        <div class="stat-lbl">Workspace</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-top:6px">
+          <div><div style="font-size:14px;font-weight:600;color:var(--text)">${CLIENT.companyDisplay}</div><div style="font-size:11px;color:var(--text-4);margin-top:2px">Seed plan · 3 of 5 seats used</div></div>
+          <button class="conn-btn" style="font-size:12px;padding:6px 14px">Manage plan</button>
+        </div>
+      </div>`}
+  </div>`;
+}
+
+/* ── BUILD SIDEBAR ── */
+function buildSidebar() {
+  const navItems = [
+    { id:'overview', label:'Overview', icon:ICONS.overview },
+    { id:'products', label:'Products', icon:ICONS.products, badge:'2', badgeClass:'red' },
+    { id:'customers', label:'Customers', icon:ICONS.customers },
+    { id:'communication', label:'Communication', icon:ICONS.communication, badge:'1', badgeClass:'green' },
+    { id:'kb', label:'Knowledge Base', icon:ICONS.kb },
+    null,
+    { id:'settings', label:'Settings', icon:ICONS.settings },
+  ];
+
+  const items = navItems.map(n => {
+    if (!n) return `<div class="nav-gap"></div>`;
+    return `<div class="nav-item ${n.id==='overview'?'active':''}" data-page="${n.id}" onclick="navTo('${n.id}')">
+      ${svgIcon(n.icon)}
+      <span class="nav-lbl">${n.label}</span>
+      ${n.badge ? `<span class="nav-bdg ${n.badgeClass}">${n.badge}</span>` : ''}
+    </div>`;
+  }).join('');
+
+  return `
+  <div class="sb-top">
+    <div class="sb-logo-wrap">
+      <svg viewBox="0 0 85 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M4 0H10V4H4V0Z" fill="#7AF17A"/>
+        <path d="M0 4H4V8L7 11L4 14L0 10V4Z" fill="#7AF17A"/>
+        <path d="M14 4H10V8L7 11L10 14L14 10V4Z" fill="#7AF17A"/>
+        <path d="M20 0H22.83L27.67 11.27H27.82L32.66 0H35.44V13.77H33.28V3.83H33.13L28.86 13.77H26.57L22.3 3.83H22.15V13.77H20V0ZM37.1 6.68C37.3 4.84 38.91 3.66 41.56 3.66C44.2 3.66 45.78 4.84 45.78 7.43V13.77H43.69V12.58H43.54C43.16 13.25 42.25 13.96 40.29 13.96C38.1 13.96 36.59 12.86 36.59 10.98C36.59 9 38.11 8.11 40.09 7.86L43.61 7.42V7.18C43.61 5.89 42.91 5.36 41.52 5.36C40.12 5.36 39.32 5.89 39.21 6.97H37.1V6.68ZM38.85 10.85C38.85 11.71 39.57 12.23 40.73 12.23C42.35 12.23 43.61 11.38 43.61 9.55V9.06L40.58 9.46C39.53 9.6 38.85 10 38.85 10.85ZM47.24 3.89H49.41V5.03H49.56C49.92 4.31 50.57 3.85 51.92 3.85H53.29V5.73H51.93C50.24 5.73 49.51 6.62 49.51 8.48V13.77H47.24V3.89ZM54.03 3.89H56.2V5.03H56.36C56.71 4.31 57.36 3.85 58.71 3.85H60.09V5.73H58.72C57.04 5.73 56.3 6.62 56.3 8.48V13.77H54.03V3.89ZM59.91 8.83C59.91 5.46 62.05 3.66 65.11 3.66C68.18 3.66 70.32 5.46 70.32 8.83C70.32 12.2 68.18 14 65.11 14C62.05 14 59.91 12.2 59.91 8.83ZM62.21 8.83C62.21 11.04 63.36 12.22 65.11 12.22C66.87 12.22 68.03 11.04 68.03 8.83C68.03 6.63 66.87 5.44 65.11 5.44C63.36 5.44 62.21 6.63 62.21 8.83ZM70.3 3.89H72.44L74.16 11.24H74.32L76.48 3.89H78.78L80.95 11.24H81.11L82.82 3.89H84.9V4.18L82.39 13.77H79.82L77.67 6.53H77.52L75.39 13.77H72.81L70.3 4.18V3.89Z" fill="currentColor"/>
+      </svg>
+    </div>
+    <div class="sb-btn" onclick="toggleSidebar()" title="Toggle sidebar">
+      <span id="collapse-icon">${svgIcon(ICONS.back, 14)}</span>
+    </div>
+  </div>
+  <div class="nav-items">${items}</div>
+  <div class="sb-user">
+    <div class="avatar" id="sb-av"></div>
+    <div class="sb-uinfo">
+      <div class="uname" id="sb-name"></div>
+      <div class="urole" id="sb-role"></div>
+    </div>
+    <div class="sb-icons">
+      <div class="sb-icon" onclick="toggleTheme()" title="Toggle theme">
+        <span id="theme-icon">${svgIcon(ICONS.sun, 13)}</span>
+      </div>
+      <div class="sb-icon" title="Notifications">
+        ${svgIcon(ICONS.bell, 13)}
+        <div class="notif-dot"></div>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ── INIT ── */
+document.addEventListener('DOMContentLoaded', () => {
+  $('sidebar').innerHTML = buildSidebar();
+  $('sb-av').textContent = CLIENT.user.initials;
+  $('sb-name').textContent = CLIENT.user.name;
+  $('sb-role').textContent = CLIENT.user.role;
+  $('main').innerHTML = pageOverview();
+});
+</script>
+
+<div id="app">
+  <div class="sidebar" id="sidebar"></div>
+  <div class="main" id="main"></div>
+</div>
+
+<div class="chat-bubble" onclick="navTo('kb')">
+  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+  Ask Marrow
+</div>
+</body>
+</html>

@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Marrow</title>
+<script src="marrow-config.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ── TOKENS ─────────────────────────────────────────── */
+:root {
+  --bg:          #0a0a0b;
+  --surface:     #111113;
+  --surface-2:   #18181b;
+  --border:      #1f1f23;
+  --border-2:    #2a2a2e;
+  --text:        #fafafa;
+  --text-2:      #a1a1aa;
+  --text-3:      #71717a;
+  --text-4:      #3f3f46;
+  --accent:      #7AF17A;
+  --accent-bg:   rgba(122,241,122,0.08);
+  --accent-bdr:  rgba(122,241,122,0.22);
+  --red:         #f87171;
+  --red-bg:      rgba(248,113,113,0.08);
+  --yellow:      #fbbf24;
+  --yellow-bg:   rgba(251,191,36,0.08);
+  --radius:      6px;
+  --radius-lg:   10px;
+}
+.light {
+  --bg:          #f8f8f8;
+  --surface:     #ffffff;
+  --surface-2:   #f1f1f3;
+  --border:      #e4e4e7;
+  --border-2:    #d4d4d8;
+  --text:        #09090b;
+  --text-2:      #3f3f46;
+  --text-3:      #71717a;
+  --text-4:      #a1a1aa;
+  --accent:      #16a34a;
+  --accent-bg:   rgba(22,163,74,0.07);
+  --accent-bdr:  rgba(22,163,74,0.28);
+  --red:         #dc2626;
+  --red-bg:      rgba(220,38,38,0.07);
+  --yellow:      #b45309;
+  --yellow-bg:   rgba(180,83,9,0.07);
+}
+
+/* ── BASE ────────────────────────────────────────────── */
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);height:100vh;overflow:hidden;font-size:13px;line-height:1.5;transition:background 200ms,color 200ms}
+button{font-family:'Inter',sans-serif;cursor:pointer;border:none;background:none}
+input{font-family:'Inter',sans-serif}
+svg{display:block;flex-shrink:0}
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border-2);border-radius:2px}
+
+/* ── LAYOUT ──────────────────────────────────────────── */
+#app{display:flex;height:100vh;overflow:hidden}
+
+/* ── SIDEBAR ─────────────────────────────────────────── */
+.sidebar{width:216px;min-width:216px;background:var(--bg);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;transition:background 200ms,border-color 200ms}
+.sb-logo{padding:16px 14px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:0}
+.sb-logo svg{height:16px;width:auto}
+.sb-search{margin:10px 10px 4px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:6px 10px;display:flex;align-items:center;gap:7px;color:var(--text-4);font-size:12px;cursor:pointer;transition:border-color 150ms}
+.sb-search:hover{border-color:var(--border-2)}
+.sb-search-key{margin-left:auto;background:var(--surface-2);border-radius:3px;padding:1px 5px;font-size:10px;color:var(--text-4);font-family:'JetBrains Mono',monospace}
+.nav-items{flex:1;padding:6px 0;overflow-y:auto}
+.nav-item{display:flex;align-items:center;gap:9px;padding:7px 12px;font-size:12.5px;font-weight:500;color:var(--text-3);cursor:pointer;border-left:2px solid transparent;transition:all 120ms;margin:1px 0}
+.nav-item:hover{color:var(--text-2);background:var(--surface);border-left-color:transparent}
+.nav-item.active{color:var(--accent);border-left-color:var(--accent);background:var(--accent-bg)}
+.nav-item svg{width:14px;height:14px;opacity:.75;flex-shrink:0}
+.nav-item.active svg{opacity:1}
+.nav-badge{margin-left:auto;background:var(--red);color:#fff;border-radius:50%;width:16px;height:16px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700}
+.nav-badge.green{background:var(--accent-bg);color:var(--accent);border:1px solid var(--accent-bdr)}
+.nav-sep{height:1px;background:var(--border);margin:6px 12px}
+.sb-user{padding:10px 12px;border-top:1px solid var(--border);display:flex;align-items:center;gap:9px;cursor:pointer;transition:background 120ms}
+.sb-user:hover{background:var(--surface)}
+.avatar{width:26px;height:26px;border-radius:50%;background:var(--accent-bg);border:1px solid var(--accent-bdr);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:700;color:var(--accent);flex-shrink:0}
+.avatar.sm{width:22px;height:22px;font-size:8px}
+.sb-user-info .name{font-size:12px;font-weight:600;color:var(--text-2)}
+.sb-user-info .role{font-size:10px;color:var(--text-4)}
+
+/* ── MAIN ────────────────────────────────────────────── */
+.main{flex:1;overflow-y:auto;background:var(--bg);transition:background 200ms;display:flex;flex-direction:column}
+.topbar{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;border-bottom:1px solid var(--border);flex-shrink:0}
+.greeting{font-size:17px;font-weight:700;color:var(--text);letter-spacing:-0.3px}
+.topbar-right{display:flex;align-items:center;gap:10px}
+.user-badge{display:flex;align-items:center;gap:8px;padding:5px 10px 5px 6px;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);cursor:pointer;transition:border-color 150ms}
+.user-badge:hover{border-color:var(--border-2)}
+.badge-info .name{font-size:12px;font-weight:600;color:var(--text-2)}
+.badge-info .role{font-size:10px;color:var(--text-4)}
+.icon-btn{width:30px;height:30px;display:flex;align-items:center;justify-content:center;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);cursor:pointer;color:var(--text-3);transition:all 150ms;position:relative;flex-shrink:0}
+.icon-btn:hover{border-color:var(--border-2);color:var(--text-2)}
+.notif-dot{position:absolute;top:-3px;right:-3px;width:14px;height:14px;background:var(--red);border-radius:50%;font-size:8px;color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center;border:2px solid var(--bg)}
+.page-content{padding:20px 24px;flex:1}
+
+/* ── CHIPS ───────────────────────────────────────────── */
+.chips{display:flex;gap:7px;overflow-x:auto;padding-bottom:2px;margin-bottom:20px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex-shrink:0;display:flex;align-items:center;gap:6px;padding:6px 12px;background:var(--surface);border:1px solid var(--border);border-radius:50px;font-size:12px;font-weight:500;color:var(--text-3);cursor:pointer;transition:all 150ms;white-space:nowrap}
+.chip:hover{border-color:var(--border-2);color:var(--text-2)}
+.chip.red{border-color:var(--red-bg);color:var(--red);background:var(--red-bg)}
+.chip.yellow{border-color:var(--yellow-bg);color:var(--yellow);background:var(--yellow-bg)}
+.chip.green{border-color:var(--accent-bdr);color:var(--accent);background:var(--accent-bg)}
+.chip-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+
+/* ── SECTION LABEL ───────────────────────────────────── */
+.section-label{font-size:11px;font-weight:600;color:var(--text-4);text-transform:uppercase;letter-spacing:.6px;margin-bottom:10px}
+
+/* ── BENTO GRID ──────────────────────────────────────── */
+.bento{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:20px}
+.bento-2{grid-column:span 2}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px 20px;cursor:pointer;transition:border-color 150ms}
+.card:hover{border-color:var(--border-2)}
+.card-label{font-size:10px;font-weight:600;color:var(--text-4);text-transform:uppercase;letter-spacing:.7px;margin-bottom:14px}
+.card-num{font-size:36px;font-weight:700;color:var(--text);font-family:'JetBrains Mono',monospace;letter-spacing:-1.5px;line-height:1;margin-bottom:4px}
+.card-sub{font-size:11px;color:var(--text-4);margin-bottom:14px}
+
+/* ── PRODUCT ROWS ────────────────────────────────────── */
+.prod-row{display:flex;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--border)}
+.prod-row:last-child{border-bottom:none}
+.prod-name{font-size:12px;color:var(--text-2);flex:1}
+.health-bar{width:52px;height:3px;background:var(--surface-2);border-radius:2px;overflow:hidden;flex-shrink:0}
+.health-fill{height:100%;border-radius:2px;background:var(--accent)}
+.health-fill.warn{background:var(--yellow)}
+.health-fill.bad{background:var(--red)}
+.health-num{font-size:11px;font-family:'JetBrains Mono',monospace;width:28px;text-align:right;flex-shrink:0}
+.health-num.ok{color:var(--accent)}
+.health-num.warn{color:var(--yellow)}
+.health-num.bad{color:var(--red)}
+
+/* ── CUSTOMER ROWS ───────────────────────────────────── */
+.cust-row{display:flex;align-items:center;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border)}
+.cust-row:last-child{border-bottom:none}
+.cust-name{font-size:12px;color:var(--text-2)}
+.cust-arr{font-size:12px;font-family:'JetBrains Mono',monospace;color:var(--text)}
+
+/* ── COMM STATS ──────────────────────────────────────── */
+.comm-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:4px}
+.comm-box{background:var(--surface-2);border-radius:var(--radius);padding:10px 12px}
+.comm-box-val{font-size:22px;font-weight:700;font-family:'JetBrains Mono',monospace;line-height:1}
+.comm-box-label{font-size:9px;text-transform:uppercase;letter-spacing:.5px;color:var(--text-4);margin-top:3px}
+
+/* ── ACTIVITY FEED ───────────────────────────────────── */
+.activity{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:0 18px}
+.act-row{display:flex;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--border)}
+.act-row:last-child{border-bottom:none}
+.act-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);flex-shrink:0}
+.act-text{font-size:12px;color:var(--text-3);flex:1}
+.act-text span{color:var(--text-2);font-weight:500}
+.act-time{font-size:11px;color:var(--text-4);font-family:'JetBrains Mono',monospace;white-space:nowrap}
+
+/* ── MINI CHAT BUBBLE ────────────────────────────────── */
+.chat-bubble{position:fixed;bottom:20px;right:20px;background:var(--accent);color:#000;border-radius:50px;padding:9px 16px;display:flex;align-items:center;gap:7px;font-size:12px;font-weight:700;cursor:pointer;box-shadow:0 4px 20px rgba(122,241,122,.2);transition:all 150ms;z-index:200}
+.chat-bubble:hover{transform:translateY(-2px);box-shadow:0 6px 28px rgba(122,241,122,.3)}
+.light .chat-bubble{box-shadow:0 4px 20px rgba(22,163,74,.2)}
+
+/* ── PRODUCTS PAGE ───────────────────────────────────── */
+.prod-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px 18px;margin-bottom:10px;display:flex;align-items:center;gap:16px;cursor:pointer;transition:border-color 150ms}
+.prod-card:hover{border-color:var(--border-2)}
+.prod-card-name{font-size:14px;font-weight:600;color:var(--text);flex:1}
+.prod-card-meta{font-size:11px;color:var(--text-4);margin-top:2px}
+.prod-card-health{text-align:right}
+.prod-health-big{font-size:22px;font-weight:700;font-family:'JetBrains Mono',monospace}
+.tag{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:4px;font-size:10px;font-weight:600}
+.tag.red{background:var(--red-bg);color:var(--red)}
+.tag.yellow{background:var(--yellow-bg);color:var(--yellow)}
+.tag.green{background:var(--accent-bg);color:var(--accent)}
+.add-btn{display:flex;align-items:center;gap:8px;padding:12px 18px;border:1px dashed var(--border-2);border-radius:var(--radius-lg);color:var(--text-4);font-size:12px;font-weight:500;cursor:pointer;transition:all 150ms;background:transparent;width:100%}
+.add-btn:hover{border-color:var(--accent-bdr);color:var(--accent);background:var(--accent-bg)}
+
+/* ── COMMUNICATION PAGE ──────────────────────────────── */
+.update-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px 18px;margin-bottom:10px;cursor:pointer;transition:border-color 150ms}
+.update-card:hover{border-color:var(--border-2)}
+.update-header{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.update-title{font-size:13px;font-weight:600;color:var(--text);flex:1}
+.update-desc{font-size:12px;color:var(--text-3);margin-bottom:10px}
+.update-footer{display:flex;align-items:center;gap:8px}
+.update-time{font-size:11px;color:var(--text-4);font-family:'JetBrains Mono',monospace;margin-left:auto}
+.push-btn{padding:5px 12px;background:var(--accent-bg);border:1px solid var(--accent-bdr);border-radius:var(--radius);color:var(--accent);font-size:11px;font-weight:600;cursor:pointer;transition:all 150ms}
+.push-btn:hover{background:var(--accent);color:#000}
+
+/* ── KNOWLEDGE BASE (CHAT) ───────────────────────────── */
+.kb-wrap{display:flex;flex-direction:column;height:100%}
+.kb-messages{flex:1;overflow-y:auto;padding:20px 24px;display:flex;flex-direction:column;gap:14px}
+.msg{max-width:72%;padding:11px 14px;border-radius:var(--radius-lg);font-size:13px;line-height:1.55}
+.msg.user{align-self:flex-end;background:var(--accent-bg);border:1px solid var(--accent-bdr);color:var(--text)}
+.msg.ai{align-self:flex-start;background:var(--surface);border:1px solid var(--border);color:var(--text-2)}
+.msg.ai strong{color:var(--text)}
+.msg-meta{font-size:10px;color:var(--text-4);margin-top:4px}
+.escalation{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:12px 16px;font-size:12px;color:var(--text-3);align-self:flex-start;max-width:72%}
+.escalation strong{color:var(--text-2)}
+.escalation .esc-action{display:inline-flex;align-items:center;gap:5px;margin-top:8px;padding:5px 11px;background:var(--accent-bg);border:1px solid var(--accent-bdr);border-radius:var(--radius);color:var(--accent);font-size:11px;font-weight:600;cursor:pointer}
+.kb-input-wrap{padding:14px 24px;border-top:1px solid var(--border);flex-shrink:0}
+.kb-input-row{display:flex;gap:8px;align-items:center;background:var(--surface);border:1px solid var(--border);border-radius:50px;padding:8px 8px 8px 16px;transition:border-color 150ms}
+.kb-input-row:focus-within{border-color:var(--accent-bdr)}
+.kb-input{flex:1;background:transparent;border:none;outline:none;font-size:13px;color:var(--text);font-family:'Inter',sans-serif}
+.kb-input::placeholder{color:var(--text-4)}
+.kb-send{width:28px;height:28px;border-radius:50%;background:var(--accent);display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;border:none;transition:opacity 150ms}
+.kb-send:hover{opacity:.85}
+.kb-disclaimer{font-size:10px;color:var(--text-4);text-align:center;margin-top:8px}
+
+/* ── SETTINGS / INTEGRATIONS ─────────────────────────── */
+.settings-tabs{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:20px}
+.stab{padding:9px 16px;font-size:12px;font-weight:500;color:var(--text-3);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all 150ms}
+.stab:hover{color:var(--text-2)}
+.stab.active{color:var(--accent);border-bottom-color:var(--accent)}
+.integration-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.int-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px;display:flex;flex-direction:column;gap:10px;transition:border-color 150ms}
+.int-card:hover{border-color:var(--border-2)}
+.int-card-top{display:flex;align-items:center;gap:10px}
+.int-icon{width:32px;height:32px;border-radius:var(--radius);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.int-name{font-size:13px;font-weight:600;color:var(--text)}
+.int-desc{font-size:11px;color:var(--text-4)}
+.int-status{display:flex;align-items:center;justify-content:space-between}
+.int-connected{display:flex;align-items:center;gap:5px;font-size:11px;font-weight:600;color:var(--accent)}
+.int-connected-dot{width:6px;height:6px;border-radius:50%;background:var(--accent)}
+.connect-btn{padding:5px 12px;background:var(--surface-2);border:1px solid var(--border);border-radius:var(--radius);font-size:11px;font-weight:600;color:var(--text-3);cursor:pointer;transition:all 150ms}
+.connect-btn:hover{border-color:var(--border-2);color:var(--text-2)}
+.connect-btn.primary{background:var(--accent-bg);border-color:var(--accent-bdr);color:var(--accent)}
+.connect-btn.primary:hover{background:var(--accent);color:#000}
+
+/* ── CUSTOMERS PAGE ──────────────────────────────────── */
+.cust-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:16px 18px;margin-bottom:10px;display:flex;align-items:center;gap:16px;cursor:pointer;transition:border-color 150ms}
+.cust-card:hover{border-color:var(--border-2)}
+.cust-card-avatar{width:34px;height:34px;border-radius:var(--radius);background:var(--surface-2);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--text-3);flex-shrink:0}
+.cust-card-name{font-size:13px;font-weight:600;color:var(--text)}
+.cust-card-meta{font-size:11px;color:var(--text-4);margin-top:2px}
+.cust-card-right{text-align:right;margin-left:auto}
+.cust-card-arr{font-size:16px;font-weight:700;font-family:'JetBrains Mono',monospace;color:var(--text)}
+.cust-card-signals{font-size:10px;color:var(--text-4);margin-top:2px}
+</style>
+</head>
+<body>
+
+<script>
+/* ══ CLIENT DATA CONFIG ══════════════════════════════════
+   Swap this object to re-skin the demo for any client.
+   ════════════════════════════════════════════════════════ */
+const CLIENT = {
+  company: "bliro",
+  companyDisplay: "bliro",
+  user: { name: "Kilian Kutza", initials: "KK", role: "Product Manager" },
+
+  products: [
+    { name: "Notetaker",           health: 87, signals: 12, status: "ok",   trend: "+2% this week" },
+    { name: "CRM Sync",            health: 74, signals: 9,  status: "warn", trend: "−5% this week" },
+    { name: "Coaching Assistant",  health: 61, signals: 6,  status: "bad",  trend: "−8% this week" },
+    { name: "Ask Bliro",           health: 55, signals: 3,  status: "bad",  trend: "−3% this week" },
+  ],
+
+  customers: [
+    { name: "Nordwind Energy AG",     initials: "NE", arr: "€52k", signals: 14, industry: "Energy" },
+    { name: "Mercatura GmbH",         initials: "MG", arr: "€31k", signals:  9, industry: "Retail" },
+    { name: "Schäfer Logistics",      initials: "SL", arr: "€19k", signals:  6, industry: "Logistics" },
+    { name: "Konrad & Bremer",        initials: "KB", arr: "€11k", signals:  4, industry: "Consulting" },
+  ],
+
+  updates: [
+    { sev:"red",    title:"CRM Sync reliability drop",          desc:"3 customers reported missed field updates after Salesforce sandbox refresh — eroding trust in automation.", time:"2h" },
+    { sev:"red",    title:"Transcript accuracy: dialect audio",  desc:"Austrian-accent German audio triggers ~15% accuracy drop. Nordwind Energy ticket #447 marked urgent.", time:"4h" },
+    { sev:"yellow", title:"Coaching Assistant: playbook gap",    desc:"Nordwind Energy requested industry-specific templates. Current defaults feel too generic for energy sector.", time:"8h" },
+    { sev:"yellow", title:"Meeting Prep timing issue",           desc:"5 users flagged prep emails arrive too late. Requested 30-minute-before trigger.", time:"1d" },
+    { sev:"green",  title:"Notetaker v2.4 shipped",             desc:"Webex mobile transcription added. 8 enterprise accounts unlocked automatically.", time:"1d" },
+  ],
+
+  activity: [
+    { text: "Transcript processed — Nordwind Energy sales call, <span>3 signals extracted</span>",         time: "just now" },
+    { text: "Slack pushed to <span>#product</span> and <span>#sales</span> — 24 members reached",          time: "12 min ago" },
+    { text: "<span>CRM Sync failure alert</span> — Mercatura GmbH Salesforce sandbox",                     time: "38 min ago" },
+  ],
+
+  comms: { major: 2, notable: 3, pending: 1, pushed: 8 },
+};
+</script>
+
+<div id="app">
+  <!-- SIDEBAR -->
+  <div class="sidebar">
+    <div class="sb-logo">
+      <svg viewBox="0 0 85 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M4 0H10V4H4V0Z" fill="#7AF17A"/>
+        <path d="M0 4H4V8L7 11L4 14L0 10V4Z" fill="#7AF17A"/>
+        <path d="M14 4H10V8L7 11L10 14L14 10V4Z" fill="#7AF17A"/>
+        <path d="M20 0H22.83L27.67 11.27H27.82L32.66 0H35.44V13.77H33.28V3.83H33.13L28.86 13.77H26.57L22.3 3.83H22.15V13.77H20V0Z" fill="currentColor"/>
+        <path d="M37.1 6.68C37.3 4.84 38.91 3.66 41.56 3.66C44.2 3.66 45.78 4.84 45.78 7.43V13.77H43.69V12.58H43.54C43.16 13.25 42.25 13.96 40.29 13.96C38.1 13.96 36.59 12.86 36.59 10.98C36.59 9 38.11 8.11 40.09 7.86L43.61 7.42V7.18C43.61 5.89 42.91 5.36 41.52 5.36C40.12 5.36 39.32 5.89 39.21 6.97H37.1V6.68ZM38.85 10.85C38.85 11.71 39.57 12.23 40.73 12.23C42.35 12.23 43.61 11.38 43.61 9.55V9.06L40.58 9.46C39.53 9.6 38.85 10 38.85 10.85Z" fill="currentColor"/>
+        <path d="M47.24 3.89H49.41V5.03H49.56C49.92 4.31 50.57 3.85 51.92 3.85H53.29V5.73H51.93C50.24 5.73 49.51 6.62 49.51 8.48V13.77H47.24V3.89Z" fill="currentColor"/>
+        <path d="M54.03 3.89H56.2V5.03H56.36C56.71 4.31 57.36 3.85 58.71 3.85H60.09V5.73H58.72C57.04 5.73 56.3 6.62 56.3 8.48V13.77H54.03V3.89Z" fill="currentColor"/>
+        <path d="M59.91 8.83C59.91 5.46 62.05 3.66 65.11 3.66C68.18 3.66 70.32 5.46 70.32 8.83C70.32 12.2 68.18 14 65.11 14C62.05 14 59.91 12.2 59.91 8.83ZM62.21 8.83C62.21 11.04 63.36 12.22 65.11 12.22C66.87 12.22 68.03 11.04 68.03 8.83C68.03 6.63 66.87 5.44 65.11 5.44C63.36 5.44 62.21 6.63 62.21 8.83Z" fill="currentColor"/>
+        <path d="M70.3 3.89H72.44L74.16 11.24H74.32L76.48 3.89H78.78L80.95 11.24H81.11L82.82 3.89H84.9V4.18L82.39 13.77H79.82L77.67 6.53H77.52L75.39 13.77H72.81L70.3 4.18V3.89Z" fill="currentColor"/>
+      </svg>
+    </div>
+
+    <div class="sb-search">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+      Search...
+      <span class="sb-search-key">⌘K</span>
+    </div>
+
+    <div class="nav-items">
+      <div class="nav-item active" data-page="overview">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        Overview
+      </div>
+      <div class="nav-item" data-page="products">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+        Products
+        <span class="nav-badge red" style="background:var(--red-bg);color:var(--red);border:1px solid rgba(248,113,113,.2);font-size:9px">2</span>
+      </div>
+      <div class="nav-item" data-page="customers">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        Customers
+      </div>
+      <div class="nav-item" data-page="communication">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 2L11 13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        Communication
+        <span class="nav-badge green">1</span>
+      </div>
+      <div class="nav-item" data-page="kb">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+        Knowledge Base
+      </div>
+      <div class="nav-sep"></div>
+      <div class="nav-item" data-page="settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+        Settings
+      </div>
+    </div>
+
+    <div class="sb-user">
+      <div class="avatar" id="sb-avatar"></div>
+      <div class="sb-user-info">
+        <div class="name" id="sb-name"></div>
+        <div class="role" id="sb-role"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div class="main" id="main">
+    <!-- injected by JS -->
+  </div>
+</div>
+
+<!-- Mini Chat Bubble -->
+<div class="chat-bubble" onclick="navTo('kb')">
+  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+  Ask Marrow
+</div>
+
+<script>
+/* ── HELPERS ─────────────────────────────────────────── */
+const $ = id => document.getElementById(id);
+const dot = sev => ({red:'#f87171',yellow:'#fbbf24',green:'#7AF17A'})[sev]||'#888';
+const dotClass = sev => ({red:'red',yellow:'yellow',green:'green'})[sev]||'';
+const healthClass = h => h>=80?'ok':h>=65?'warn':'bad';
+const healthColor = h => h>=80?'var(--accent)':h>=65?'var(--yellow)':'var(--red)';
+
+/* ── DARK / LIGHT TOGGLE ─────────────────────────────── */
+let isDark = true;
+function toggleTheme(){
+  isDark = !isDark;
+  document.body.classList.toggle('light', !isDark);
+  $('theme-icon').innerHTML = isDark
+    ? `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>`
+    : `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>`;
+}
+
+/* ── TOPBAR ──────────────────────────────────────────── */
+function topbar(title) {
+  return `
+  <div class="topbar">
+    <div class="greeting">${title}</div>
+    <div class="topbar-right">
+      <div class="icon-btn" onclick="toggleTheme()" title="Toggle theme">
+        <span id="theme-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></span>
+      </div>
+      <div class="icon-btn" title="Notifications">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        <div class="notif-dot">3</div>
+      </div>
+      <div class="user-badge">
+        <div class="avatar sm">${CLIENT.user.initials}</div>
+        <div class="badge-info">
+          <div class="name">${CLIENT.user.name}</div>
+          <div class="role">${CLIENT.user.role}</div>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ── PAGE: OVERVIEW ──────────────────────────────────── */
+function pageOverview() {
+  const chips = CLIENT.updates.map(u => `
+    <div class="chip ${dotClass(u.sev)}">
+      <div class="chip-dot" style="background:${dot(u.sev)}"></div>
+      ${u.title}
+    </div>`).join('');
+
+  const prodRows = CLIENT.products.map(p => `
+    <div class="prod-row">
+      <span class="prod-name">${p.name}</span>
+      <div class="health-bar"><div class="health-fill ${p.status}" style="width:${p.health}%;background:${healthColor(p.health)}"></div></div>
+      <span class="health-num ${healthClass(p.health)}">${p.health}%</span>
+    </div>`).join('');
+
+  const custRows = CLIENT.customers.slice(0,3).map(c => `
+    <div class="cust-row">
+      <span class="cust-name">${c.name}</span>
+      <span class="cust-arr">${c.arr}</span>
+    </div>`).join('');
+
+  const actRows = CLIENT.activity.map(a => `
+    <div class="act-row">
+      <div class="act-dot"></div>
+      <div class="act-text">${a.text}</div>
+      <div class="act-time">${a.time}</div>
+    </div>`).join('');
+
+  return `
+  ${topbar('Good morning, ' + CLIENT.user.name.split(' ')[0] + ' 👋')}
+  <div class="page-content" style="overflow-y:auto;flex:1">
+    <div class="section-label">What's new</div>
+    <div class="chips">${chips}</div>
+
+    <div class="bento" style="margin-bottom:20px">
+      <div class="card bento-2" onclick="navTo('products')">
+        <div class="card-label">Products</div>
+        <div style="display:flex;align-items:flex-end;gap:0;margin-bottom:14px">
+          <div>
+            <div class="card-num" style="font-size:28px">${CLIENT.products.length}</div>
+            <div class="card-sub">active products</div>
+          </div>
+          <div style="margin-left:auto;text-align:right">
+            <div style="font-size:10px;color:var(--text-4);margin-bottom:3px">Avg health</div>
+            <div style="font-size:20px;font-weight:700;font-family:'JetBrains Mono',monospace;color:var(--accent)">${Math.round(CLIENT.products.reduce((a,p)=>a+p.health,0)/CLIENT.products.length)}%</div>
+          </div>
+        </div>
+        ${prodRows}
+      </div>
+
+      <div class="card" onclick="navTo('customers')">
+        <div class="card-label">Customers</div>
+        <div class="card-num">${CLIENT.customers.reduce((a,c)=>a+c.signals,0)}</div>
+        <div class="card-sub">signals this week</div>
+        ${custRows}
+      </div>
+    </div>
+
+    <div class="bento" style="grid-template-columns:1fr 1fr;margin-bottom:20px">
+      <div class="card" onclick="navTo('communication')">
+        <div class="card-label">Communication</div>
+        <div class="card-num" style="font-size:28px">${CLIENT.comms.major + CLIENT.comms.notable}</div>
+        <div class="card-sub" style="margin-bottom:12px">updates this week</div>
+        <div class="comm-grid">
+          <div class="comm-box"><div class="comm-box-val" style="color:var(--red)">${CLIENT.comms.major}</div><div class="comm-box-label">Major</div></div>
+          <div class="comm-box"><div class="comm-box-val" style="color:var(--yellow)">${CLIENT.comms.notable}</div><div class="comm-box-label">Notable</div></div>
+          <div class="comm-box"><div class="comm-box-val" style="color:var(--accent)">${CLIENT.comms.pending}</div><div class="comm-box-label">Pending</div></div>
+          <div class="comm-box"><div class="comm-box-val">${CLIENT.comms.pushed}</div><div class="comm-box-label">Pushed</div></div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div class="card" style="cursor:default">
+          <div class="card-label">Market Signal</div>
+          <div style="font-size:12px;color:var(--text-2);line-height:1.5">Fathom launched a real-time CRM fill feature — direct overlap with CRM Sync value prop. <span style="color:var(--yellow)">Monitor closely.</span></div>
+        </div>
+        <div class="card" style="cursor:default">
+          <div class="card-label">G2 Rating</div>
+          <div style="display:flex;align-items:center;gap:8px">
+            <div style="font-size:28px;font-weight:700;font-family:'JetBrains Mono',monospace;color:var(--accent)">4.8</div>
+            <div>
+              <div style="font-size:10px;color:var(--text-3)">out of 5 · 12 reviews</div>
+              <div style="font-size:10px;color:var(--text-4)">91% five-star</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section-label">Live Activity</div>
+    <div class="activity">${actRows}</div>
+  </div>`;
+}
+
+/* ── PAGE: PRODUCTS ──────────────────────────────────── */
+function pageProducts() {
+  const cards = CLIENT.products.map(p => `
+    <div class="prod-card">
+      <div style="flex:1">
+        <div class="prod-card-name">${p.name}</div>
+        <div class="prod-card-meta">${p.signals} signals · ${p.trend}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:14px">
+        <div>
+          <div style="font-size:10px;color:var(--text-4);text-align:right;margin-bottom:5px">Health</div>
+          <div class="health-bar" style="width:80px"><div class="health-fill" style="width:${p.health}%;background:${healthColor(p.health)}"></div></div>
+        </div>
+        <div class="prod-card-health">
+          <div class="prod-health-big" style="color:${healthColor(p.health)}">${p.health}%</div>
+        </div>
+        <span class="tag ${healthClass(p.health)}">${p.status==='ok'?'Healthy':p.status==='warn'?'Warning':'Needs Attention'}</span>
+      </div>
+    </div>`).join('');
+
+  return `
+  ${topbar('Products')}
+  <div class="page-content" style="overflow-y:auto;flex:1">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+      <div class="section-label" style="margin:0">${CLIENT.products.length} products · ${CLIENT.companyDisplay}</div>
+    </div>
+    ${cards}
+    <button class="add-btn" onclick="alert('Add product flow — wire to backend')">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      Add new product
+    </button>
+  </div>`;
+}
+
+/* ── PAGE: CUSTOMERS ─────────────────────────────────── */
+function pageCustomers() {
+  const cards = CLIENT.customers.map(c => `
+    <div class="cust-card">
+      <div class="cust-card-avatar">${c.initials}</div>
+      <div>
+        <div class="cust-card-name">${c.name}</div>
+        <div class="cust-card-meta">${c.industry} · ${c.signals} signals this week</div>
+      </div>
+      <div class="cust-card-right">
+        <div class="cust-card-arr">${c.arr}</div>
+        <div class="cust-card-signals">ARR</div>
+      </div>
+    </div>`).join('');
+
+  return `
+  ${topbar('Customers')}
+  <div class="page-content" style="overflow-y:auto;flex:1">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+      <div class="section-label" style="margin:0">${CLIENT.customers.reduce((a,c)=>a+c.signals,0)} signals this week across ${CLIENT.customers.length} accounts</div>
+    </div>
+    ${cards}
+  </div>`;
+}
+
+/* ── PAGE: COMMUNICATION ─────────────────────────────── */
+function pageCommunication() {
+  const updates = CLIENT.updates.map(u => `
+    <div class="update-card">
+      <div class="update-header">
+        <div class="chip-dot" style="background:${dot(u.sev)};width:8px;height:8px;border-radius:50%;flex-shrink:0"></div>
+        <div class="update-title">${u.title}</div>
+        <span class="tag ${dotClass(u.sev)}">${u.sev==='red'?'Major':u.sev==='yellow'?'Notable':'Resolved'}</span>
+      </div>
+      <div class="update-desc">${u.desc}</div>
+      <div class="update-footer">
+        <span class="tag" style="background:var(--surface-2);color:var(--text-4)">
+          <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:inline;margin-right:3px"><path d="M22 2L11 13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          Push via Slack (n8n)
+        </span>
+        <span class="tag" style="background:var(--surface-2);color:var(--text-4)">LinkedIn</span>
+        <span class="tag" style="background:var(--surface-2);color:var(--text-4)">Newsletter</span>
+        <div class="update-time">${u.time} ago</div>
+        <button class="push-btn">Push update</button>
+      </div>
+    </div>`).join('');
+
+  return `
+  ${topbar('Communication')}
+  <div class="page-content" style="overflow-y:auto;flex:1">
+    <div style="display:flex;gap:8px;margin-bottom:16px">
+      <button class="add-btn" style="width:auto;padding:8px 14px;border-style:dashed">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Upload transcript
+      </button>
+      <button class="add-btn" style="width:auto;padding:8px 14px;border-style:dashed">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+        Voice memo
+      </button>
+    </div>
+    <div class="section-label">Pending updates — AI suggested</div>
+    ${updates}
+  </div>`;
+}
+
+/* ── PAGE: KNOWLEDGE BASE ────────────────────────────── */
+const kbMessages = [
+  { role:'user', text:'What are the top issues with CRM Sync this week?' },
+  { role:'ai',  text:`<strong>Top 3 issues with CRM Sync this week:</strong><br><br>
+    1. <strong>Salesforce sandbox refresh</strong> — field mapping breaks after sandbox reset, affecting Mercatura GmbH and 2 other accounts. Severity: high.<br>
+    2. <strong>Dynamics 365 delay</strong> — sync lag of 10–15 minutes reported by Nordwind Energy. Intermittent.<br>
+    3. <strong>SAP connector timeout</strong> — 3 failed syncs in the last 48h on accounts with large deal volumes.<br><br>
+    Health score has dropped from 79% → 74% over 7 days. Engineering has an open ticket (ENG-441).`, time:'2 min ago' },
+];
+
+function pageKB() {
+  const msgs = kbMessages.map(m => m.role==='user'
+    ? `<div class="msg user">${m.text}<div class="msg-meta">${m.time||''}</div></div>`
+    : `<div class="msg ai">${m.text}<div class="msg-meta">Marrow · ${m.time||'now'}</div></div>`
+  ).join('');
+
+  const escalation = `
+    <div class="escalation">
+      <strong>I couldn't find detailed runbook for ENG-441.</strong><br>
+      I can route this question to Tom (Engineering) who owns the CRM Sync module.
+      <div><span class="esc-action">
+        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M22 2L11 13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        Ask Tom via Slack
+      </span></div>
+    </div>`;
+
+  return `
+  ${topbar('Knowledge Base')}
+  <div class="kb-wrap">
+    <div class="kb-messages" id="kb-msgs">
+      <div style="text-align:center;padding:16px 0 8px">
+        <div style="font-size:12px;color:var(--text-4)">Ask anything about ${CLIENT.companyDisplay}'s products, customers, or signals</div>
+      </div>
+      ${msgs}
+      ${escalation}
+    </div>
+    <div class="kb-input-wrap">
+      <div class="kb-input-row">
+        <input class="kb-input" id="kb-input" placeholder="Ask about products, customers, or signals..." onkeydown="if(event.key==='Enter')sendMsg()">
+        <button class="kb-send" onclick="sendMsg()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        </button>
+      </div>
+      <div class="kb-disclaimer">Answers are grounded in your product data · Powered by Marrow AI</div>
+    </div>
+  </div>`;
+}
+
+function sendMsg() {
+  const inp = $('kb-input');
+  const val = inp.value.trim();
+  if (!val) return;
+  const msgs = $('kb-msgs');
+  msgs.innerHTML += `<div class="msg user">${val}<div class="msg-meta">just now</div></div>`;
+  inp.value = '';
+  setTimeout(() => {
+    msgs.innerHTML += `<div class="msg ai"><strong>Processing...</strong> I'm searching your product knowledge base for relevant context.<div class="msg-meta">Marrow · now</div></div>`;
+    msgs.scrollTop = msgs.scrollHeight;
+  }, 600);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+/* ── PAGE: SETTINGS ──────────────────────────────────── */
+const integrations = [
+  { name:'Notion',    icon:'📝', desc:'Knowledge base sync',  connected:false },
+  { name:'Slack',     icon:'💬', desc:'Push notifications',   connected:true,  detail:'workspace: bliro-team' },
+  { name:'Gmail',     icon:'📧', desc:'Email signal capture', connected:false },
+  { name:'Salesforce',icon:'☁️', desc:'CRM data source',      connected:false },
+  { name:'HubSpot',   icon:'🔶', desc:'CRM & deal tracking',  connected:false },
+  { name:'Linear',    icon:'⬡',  desc:'Engineering context',  connected:false },
+  { name:'GitHub',    icon:'⚙️', desc:'Shipping signals',     connected:false },
+  { name:'n8n',       icon:'⚡', desc:'Workflow automation',  connected:true,  detail:'Slack cartoon workflow' },
+  { name:'Zapier',    icon:'⚡', desc:'Generic automation',   connected:false },
+];
+
+let settingsTab = 'integrations';
+function setSettingsTab(t) {
+  settingsTab = t;
+  renderSettings();
+}
+function renderSettings() {
+  const intCards = integrations.map(i => `
+    <div class="int-card">
+      <div class="int-card-top">
+        <div class="int-icon" style="background:var(--surface-2)">${i.icon}</div>
+        <div><div class="int-name">${i.name}</div><div class="int-desc">${i.desc}</div></div>
+      </div>
+      <div class="int-status">
+        ${i.connected
+          ? `<div class="int-connected"><div class="int-connected-dot"></div>Connected${i.detail?` · <span style="font-weight:400;color:var(--text-4)">${i.detail}</span>`:''}</div><button class="connect-btn">Manage</button>`
+          : `<div style="font-size:11px;color:var(--text-4)">Not connected</div><button class="connect-btn primary">Connect</button>`}
+      </div>
+    </div>`).join('');
+
+  const general = `
+    <div class="card" style="margin-bottom:10px">
+      <div class="card-label">Workspace</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:4px">
+        <div><div style="font-size:13px;font-weight:600;color:var(--text)">${CLIENT.companyDisplay}</div><div style="font-size:11px;color:var(--text-4)">Seed plan · 3 of 5 seats used</div></div>
+        <button class="connect-btn" style="font-size:12px;padding:6px 14px">Manage plan</button>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-label">Client data</div>
+      <div style="font-size:12px;color:var(--text-3);line-height:1.6">Currently showing demo data for <strong style="color:var(--text-2)">${CLIENT.companyDisplay}</strong>. To switch demo context, update the <code style="background:var(--surface-2);padding:1px 5px;border-radius:3px;font-size:11px">CLIENT</code> config object at the top of this file.</div>
+    </div>`;
+
+  $('main').innerHTML = `
+  ${topbar('Settings')}
+  <div class="page-content" style="overflow-y:auto;flex:1">
+    <div class="settings-tabs">
+      <div class="stab ${settingsTab==='general'?'active':''}" onclick="setSettingsTab('general')">General</div>
+      <div class="stab ${settingsTab==='integrations'?'active':''}" onclick="setSettingsTab('integrations')">Integrations</div>
+      <div class="stab ${settingsTab==='notifications'?'active':''}" onclick="setSettingsTab('notifications')">Notifications</div>
+    </div>
+    ${settingsTab==='integrations' ? `<div class="integration-grid">${intCards}</div>` : general}
+  </div>`;
+}
+
+/* ── NAV ─────────────────────────────────────────────── */
+const pages = { overview:pageOverview, products:pageProducts, customers:pageCustomers, communication:pageCommunication, kb:pageKB };
+
+function navTo(id) {
+  document.querySelectorAll('.nav-item').forEach(n => {
+    n.classList.toggle('active', n.dataset.page === id);
+  });
+  if (id === 'settings') { renderSettings(); return; }
+  const fn = pages[id];
+  if (fn) $('main').innerHTML = fn();
+}
+
+document.querySelectorAll('.nav-item[data-page]').forEach(n => {
+  n.addEventListener('click', () => navTo(n.dataset.page));
+});
+
+/* ── INIT ────────────────────────────────────────────── */
+$('sb-avatar').textContent = CLIENT.user.initials;
+$('sb-name').textContent   = CLIENT.user.name;
+$('sb-role').textContent   = CLIENT.user.role;
+$('main').innerHTML = pageOverview();
+</script>
+</body>
+</html>
