@@ -37,10 +37,10 @@ svg{display:block;flex-shrink:0}
 /* ── SIDEBAR ── */
 .sidebar{width:218px;min-width:218px;background:var(--sidebar);display:flex;flex-direction:column;overflow:hidden;transition:width .22s ease,min-width .22s ease;flex-shrink:0}
 .sidebar.collapsed{width:50px;min-width:50px}
-.sb-top{padding:14px 10px 8px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.sb-top{padding:18px 14px 10px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
 .sb-logo-wrap{overflow:hidden;display:flex;align-items:center;flex:1}
 .sidebar.collapsed .sb-logo-wrap{opacity:0;pointer-events:none;width:0;flex:0}
-.sb-logo-wrap svg{height:13px;width:auto}
+.sb-logo-wrap svg{height:14px;width:auto}
 .sb-btn{width:28px;height:28px;display:flex;align-items:center;justify-content:center;border-radius:var(--r);color:var(--text-3);cursor:pointer;transition:background .12s,color .12s;flex-shrink:0}
 .sb-btn:hover{background:rgba(255,255,255,.07);color:var(--text-2)}
 .light .sb-btn:hover{background:rgba(0,0,0,.06)}
@@ -169,8 +169,8 @@ svg{display:block;flex-shrink:0}
 .act-time{font-size:11px;color:var(--text-4);white-space:nowrap;margin-top:1px}
 
 /* ── PRODUCTS PORTFOLIO ── */
-.portfolio{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
-.pf-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:26px 26px 22px;cursor:pointer;transition:border-color .15s;display:flex;flex-direction:column;gap:16px}
+.portfolio{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;align-items:start}
+.pf-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:28px 28px 24px;cursor:pointer;transition:border-color .15s;display:flex;flex-direction:column;gap:18px;min-height:200px}
 .pf-card:hover{border-color:var(--border-2)}
 .pf-top{display:flex;flex-direction:column;gap:12px}
 .pf-name{font-size:18px;font-weight:700;color:var(--text);letter-spacing:-.3px}
@@ -261,7 +261,20 @@ svg{display:block;flex-shrink:0}
 .full-card-lbl{font-size:11px;font-weight:600;color:var(--text-4);text-transform:uppercase;letter-spacing:.6px;margin-bottom:14px}
 
 /* KB */
-.kb-wrap{display:flex;flex-direction:column;height:100%}
+.kb-wrap{display:flex;flex-direction:row;height:100%;overflow:hidden}
+.kb-hist{width:220px;min-width:220px;border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;transition:width .22s,min-width .22s;background:var(--sidebar)}
+.sidebar.collapsed .kb-hist{display:none}
+.kb-hist-head{padding:14px 14px 8px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.kb-hist-title{font-size:11px;font-weight:600;color:var(--text-4);text-transform:uppercase;letter-spacing:.6px}
+.kb-new-btn{font-size:11px;font-weight:600;color:var(--accent);cursor:pointer;padding:3px 8px;border-radius:var(--r);transition:background .12s}
+.kb-new-btn:hover{background:var(--accent-dim)}
+.kb-conv-list{flex:1;overflow-y:auto;padding:4px 8px}
+.kb-conv-item{padding:8px 10px;border-radius:var(--r);cursor:pointer;font-size:12px;color:var(--text-3);transition:all .12s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin:1px 0}
+.kb-conv-item:hover{background:rgba(255,255,255,.05);color:var(--text-2)}
+.light .kb-conv-item:hover{background:rgba(0,0,0,.05)}
+.kb-conv-item.active{background:var(--accent-dim);color:var(--accent)}
+.kb-conv-time{font-size:10px;color:var(--text-4);margin-top:1px}
+.kb-chat{flex:1;display:flex;flex-direction:column;overflow:hidden}
 .kb-msgs{flex:1;overflow-y:auto;padding:20px 28px;display:flex;flex-direction:column;gap:14px}
 .msg{max-width:72%;padding:11px 14px;border-radius:var(--r-lg);font-size:13px;line-height:1.55}
 .msg.user{align-self:flex-end;background:var(--accent-dim);border:1px solid var(--accent-bdr);color:var(--text)}
@@ -524,9 +537,24 @@ let settingsTab = 'integrations';
 let activeScope = '7d';
 let chatPopupOpen = false;
 let popupHistory = [];
-let kbHistory = [
-  { role:'system', content:`You are Marrow, an AI product management assistant for ${CLIENT.companyDisplay}. You help PMs understand product signals, customer health, and what to prioritize. Be concise and specific. Data context: ${JSON.stringify({products:CLIENT.products.map(p=>({name:p.name,signals:p.signals,problems:p.problems,open:p.open})),customers:CLIENT.customers.map(c=>({name:c.name,arr:c.arr,risk:c.risk,signals:c.signals}))})}` }
-];
+
+/* ── CONVERSATION HISTORY ── */
+const KB_SYS = `You are Marrow, an AI product management assistant for ${CLIENT.companyDisplay}. Be concise and specific. Data: products=${JSON.stringify(CLIENT.products.map(p=>({name:p.name,signals:p.signals,problems:p.problems,open:p.open})))}, customers=${JSON.stringify(CLIENT.customers.map(c=>({name:c.name,arr:c.arr,risk:c.risk,signals:c.signals})))}`;
+let kbConvs = []; // [{id, title, messages:[{role,content}]}]
+let activeConvId = null;
+
+function newKbConv(seedMessages=[]) {
+  const id = Date.now();
+  const firstUser = seedMessages.find(m=>m.role==='user');
+  const title = firstUser ? firstUser.content.slice(0,42)+(firstUser.content.length>42?'…':'') : 'New conversation';
+  const conv = { id, title, messages: [...seedMessages], ts: new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}) };
+  kbConvs.unshift(conv);
+  activeConvId = id;
+  return conv;
+}
+function getActiveConv() { return kbConvs.find(c=>c.id===activeConvId)||null; }
+function switchConv(id) { activeConvId=id; navTo('kb'); }
+function startNewConv() { newKbConv(); navTo('kb'); }
 
 /* ── HELPERS ── */
 const $ = id => document.getElementById(id);
@@ -640,8 +668,17 @@ function pageOverview() {
 
   return `
   <div class="topbar">
-    <div class="page-title" style="font-size:30px;letter-spacing:-.7px">Welcome back, ${CLIENT.user.name.split(' ')[0]}</div>
-    <div class="page-sub" style="margin-top:6px">${new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'})}</div>
+    <div style="display:flex;align-items:flex-end;justify-content:space-between">
+      <div>
+        <div class="page-title" style="font-size:30px;letter-spacing:-.7px">Welcome back, ${CLIENT.user.name.split(' ')[0]}</div>
+        <div class="page-sub" style="margin-top:6px">${new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'})}</div>
+      </div>
+      <div class="scope-tabs" style="margin-bottom:4px">
+        <div class="scope-tab ${activeScope==='7d'?'active':''}" onclick="activeScope='7d';navTo('overview')">7d</div>
+        <div class="scope-tab ${activeScope==='30d'?'active':''}" onclick="activeScope='30d';navTo('overview')">30d</div>
+        <div class="scope-tab ${activeScope==='90d'?'active':''}" onclick="activeScope='90d';navTo('overview')">90d</div>
+      </div>
+    </div>
   </div>
   <div class="page-content">
     <div class="chip-bar">${chips}</div>
@@ -835,7 +872,7 @@ function pageCustomers() {
   </div>
   <div class="page-content">
     <div class="cust-hero">
-      <div class="hero-card"><div class="hero-lbl">Happiness score</div><div class="hero-val" style="color:${hs>=70?'var(--accent)':hs>=50?'var(--yellow)':'var(--red)'}">${hs}/100</div><div class="hero-sub">ARR-weighted · problem ratio</div></div>
+      <div class="hero-card"><div class="hero-lbl">Satisfaction score</div><div class="hero-val" style="color:${hs>=70?'var(--accent)':hs>=50?'var(--yellow)':'var(--red)'}">${hs}/100</div><div class="hero-sub">ARR-weighted · problem ratio</div></div>
       <div class="hero-card"><div class="hero-lbl">At-risk accounts</div><div class="hero-val" style="color:${atR>0?'var(--red)':'var(--accent)'}">${atR}</div><div class="hero-sub">${atR} HIGH churn risk</div></div>
       <div class="hero-card"><div class="hero-lbl">Total ARR</div><div class="hero-val">€${totalArr}k</div><div class="hero-sub">across ${CLIENT.customers.length} accounts</div></div>
       <div class="hero-card"><div class="hero-lbl">Signal volume (${activeScope})</div><div class="hero-val">${totalSignals()}</div><div class="hero-sub">${trendStr(totalSignals(),prevSignals())} vs prior period</div></div>
@@ -1014,63 +1051,90 @@ function pageUpdateDetail(id) {
 /* KNOWLEDGE BASE */
 function pageKB() {
   const hasKey = window.MARROW_OPENAI_KEY && !window.MARROW_OPENAI_KEY.includes('paste');
-  const msgs = kbHistory.filter(m=>m.role!=='system').map(m => `
-    <div class="msg ${m.role==='user'?'user':'ai'}">${m.content}<div class="msg-time">${m.role==='user'?'You':'Marrow · just now'}</div></div>`).join('');
+  if (!activeConvId) newKbConv();
+  const conv = getActiveConv();
+
+  const convItems = kbConvs.map(c=>`
+    <div class="kb-conv-item ${c.id===activeConvId?'active':''}" onclick="switchConv(${c.id})">
+      ${c.title}
+      <div class="kb-conv-time">${c.ts}</div>
+    </div>`).join('');
+
+  const msgs = conv ? conv.messages.map(m=>`
+    <div class="msg ${m.role==='user'?'user':'ai'}">${m.content}<div class="msg-time">${m.role==='user'?'You':'Marrow'}</div></div>`).join('') : '';
 
   return `
   ${topbar('Knowledge Base', `Ask anything about ${CLIENT.companyDisplay}`)}
-  ${!hasKey ? `<div class="kb-notice">Add your OpenAI key to marrow-config.js to enable live AI responses.</div>` : ''}
+  ${!hasKey ? `<div class="kb-notice">Add your OpenAI key to marrow-config.js to enable live responses.</div>` : ''}
   <div class="kb-wrap">
-    <div class="kb-msgs" id="kb-msgs">
-      <div style="text-align:center;padding:16px 0 8px"><div style="font-size:12px;color:var(--text-4)">Ask about ${CLIENT.companyDisplay}'s products, customers, or signals</div></div>
-      ${msgs}
-    </div>
-    <div class="kb-in-wrap">
-      <div class="kb-in-row">
-        <input class="kb-in" id="kb-in" placeholder="Ask about products, customers, or signals..." onkeydown="if(event.key==='Enter')sendMsg()">
-        <button class="kb-send" onclick="sendMsg()">${svgIcon(ICONS.send,13).replace('currentColor','#000')}</button>
+    <div class="kb-hist">
+      <div class="kb-hist-head">
+        <span class="kb-hist-title">History</span>
+        <span class="kb-new-btn" onclick="startNewConv()">+ New</span>
       </div>
-      <div class="kb-disc">Answers grounded in your product data · Powered by Marrow AI</div>
+      <div class="kb-conv-list">${convItems||'<div style="padding:8px 10px;font-size:12px;color:var(--text-4)">No conversations yet.</div>'}</div>
+    </div>
+    <div class="kb-chat">
+      <div class="kb-msgs" id="kb-msgs">
+        ${msgs||'<div style="text-align:center;padding:24px 0 8px"><div style="font-size:12px;color:var(--text-4)">Ask about '+CLIENT.companyDisplay+'\'s products, customers, or signals</div></div>'}
+      </div>
+      <div class="kb-in-wrap">
+        <div class="kb-in-row">
+          <input class="kb-in" id="kb-in" placeholder="Ask anything…" onkeydown="if(event.key==='Enter')sendMsg()">
+          <button class="kb-send" onclick="sendMsg()">${svgIcon(ICONS.send,13).replace('currentColor','#000')}</button>
+        </div>
+        <div class="kb-disc">Answers grounded in your product data · Powered by Marrow AI</div>
+      </div>
     </div>
   </div>`;
 }
 
 async function sendMsg() {
-  const inp = $('kb-in');
-  const val = inp.value.trim();
+  const inp = $('kb-in'), val = inp.value.trim();
   if (!val) return;
   inp.value = '';
+
+  if (!activeConvId) newKbConv();
+  const conv = getActiveConv();
+  conv.messages.push({ role:'user', content:val });
+  if (conv.title === 'New conversation') conv.title = val.slice(0,42)+(val.length>42?'…':'');
+
   const msgs = $('kb-msgs');
   msgs.innerHTML += `<div class="msg user">${val}<div class="msg-time">You</div></div>`;
   msgs.scrollTop = msgs.scrollHeight;
-  kbHistory.push({ role:'user', content:val });
+
+  // Refresh sidebar title
+  const convItem = document.querySelector(`.kb-conv-item.active`);
+  if (convItem) convItem.childNodes[0].textContent = conv.title;
 
   const hasKey = window.MARROW_OPENAI_KEY && !window.MARROW_OPENAI_KEY.includes('paste');
   if (!hasKey) {
-    const reply = 'Please add your OpenAI API key to marrow-config.js to enable live responses.';
+    const reply = 'Add your OpenAI API key to marrow-config.js to enable live responses.';
     msgs.innerHTML += `<div class="msg ai">${reply}<div class="msg-time">Marrow</div></div>`;
+    conv.messages.push({ role:'assistant', content:reply });
     msgs.scrollTop = msgs.scrollHeight;
     return;
   }
 
-  const loadId = 'load-' + Date.now();
-  msgs.innerHTML += `<div class="msg ai" id="${loadId}"><span style="color:var(--text-4)">Thinking…</span></div>`;
+  const lid = 'l' + Date.now();
+  msgs.innerHTML += `<div class="msg ai" id="${lid}"><span style="color:var(--text-4)">Thinking…</span></div>`;
   msgs.scrollTop = msgs.scrollHeight;
 
+  const apiMessages = [{ role:'system', content:KB_SYS }, ...conv.messages.slice(-20)];
   try {
     const res = await fetch('https://api.openai.com/v1/chat/completions', {
       method:'POST',
       headers:{ 'Content-Type':'application/json', 'Authorization':'Bearer '+window.MARROW_OPENAI_KEY },
-      body: JSON.stringify({ model:'gpt-4o-mini', messages: kbHistory, max_tokens:600 })
+      body: JSON.stringify({ model:'gpt-4o-mini', messages: apiMessages, max_tokens:600 })
     });
     const data = await res.json();
-    const reply = data.choices?.[0]?.message?.content || 'Sorry, something went wrong.';
-    kbHistory.push({ role:'assistant', content:reply });
-    const el = $(loadId);
+    const reply = data.choices?.[0]?.message?.content || 'Something went wrong.';
+    conv.messages.push({ role:'assistant', content:reply });
+    const el = $(lid);
     if (el) el.innerHTML = reply.replace(/\n/g,'<br>') + `<div class="msg-time">Marrow</div>`;
   } catch(e) {
-    const el = $(loadId);
-    if (el) el.innerHTML = 'Error connecting to OpenAI. Check your API key.<div class="msg-time">Marrow</div>';
+    const el = $(lid);
+    if (el) el.innerHTML = `Error: ${e.message}<div class="msg-time">Marrow</div>`;
   }
   msgs.scrollTop = msgs.scrollHeight;
 }
@@ -1129,8 +1193,6 @@ function buildSidebar() {
     { id:'customers', label:'Customers', icon:ICONS.customers },
     { id:'communication', label:'Communication', icon:ICONS.communication, badge:'1', badgeClass:'green' },
     { id:'kb', label:'Knowledge Base', icon:ICONS.kb },
-    null,
-    { id:'settings', label:'Settings', icon:ICONS.settings },
   ];
 
   const items = navItems.map(n => {
@@ -1164,12 +1226,12 @@ function buildSidebar() {
       <div class="urole" id="sb-role"></div>
     </div>
     <div class="sb-icons">
-      <div class="sb-icon" onclick="toggleTheme()" title="Toggle theme">
-        <span id="theme-icon">${svgIcon(ICONS.sun, 13)}</span>
-      </div>
       <div class="sb-icon" title="Notifications">
         ${svgIcon(ICONS.bell, 13)}
         <div class="notif-dot"></div>
+      </div>
+      <div class="sb-icon" onclick="renderSettings()" title="Settings">
+        ${svgIcon(ICONS.settings, 13)}
       </div>
     </div>
   </div>`;
@@ -1208,7 +1270,7 @@ document.addEventListener('DOMContentLoaded', () => {
       <input class="cp-in" id="cp-in" placeholder="Quick question…" onkeydown="if(event.key==='Enter')sendPopup()">
       <button class="cp-send" onclick="sendPopup()"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="#000" stroke-width="2.5"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>
     </div>
-    <div class="cp-kb-link" onclick="toggleChat();navTo('kb')">Open full Knowledge Base →</div>
+    <div class="cp-kb-link" onclick="openFullKB()">Open full Knowledge Base →</div>
   </div>
 </div>
 
@@ -1222,13 +1284,26 @@ function toggleChat() {
   chatPopupOpen = !chatPopupOpen;
   $('chat-popup').classList.toggle('cp-hidden', !chatPopupOpen);
   if (chatPopupOpen) {
-    $('cp-ctx').textContent = currentPage === 'product-detail' && detailId !== null
+    const ctx = currentPage === 'product-detail' && detailId !== null
       ? CLIENT.products[detailId].name
       : currentPage === 'customer-detail' && detailId !== null
       ? CLIENT.customers[detailId].name
-      : currentPage.charAt(0).toUpperCase() + currentPage.slice(1);
-    setTimeout(() => $('cp-in').focus(), 100);
+      : currentPage.charAt(0).toUpperCase() + currentPage.slice(1).replace('-',' ');
+    $('cp-ctx').textContent = ctx;
+    setTimeout(() => $('cp-in') && $('cp-in').focus(), 100);
   }
+}
+
+function openFullKB() {
+  toggleChat();
+  if (popupHistory.length > 0) {
+    // Transfer popup messages into a new KB conversation
+    const conv = newKbConv(popupHistory);
+    // Don't clear popupHistory so popup still shows the chat if reopened
+  } else if (!activeConvId) {
+    newKbConv();
+  }
+  navTo('kb');
 }
 
 async function sendPopup() {
