@@ -169,14 +169,14 @@ svg{display:block;flex-shrink:0}
 .act-time{font-size:11px;color:var(--text-4);white-space:nowrap;margin-top:1px}
 
 /* ── PRODUCTS PORTFOLIO ── */
-.portfolio{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;align-items:start}
-.pf-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:28px 28px 24px;cursor:pointer;transition:border-color .15s;display:flex;flex-direction:column;gap:18px;min-height:200px}
+.portfolio{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
+.pf-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:28px 28px 24px;cursor:pointer;transition:border-color .15s;display:flex;flex-direction:column;justify-content:space-between;gap:20px}
 .pf-card:hover{border-color:var(--border-2)}
-.pf-top{display:flex;flex-direction:column;gap:12px}
-.pf-name{font-size:18px;font-weight:700;color:var(--text);letter-spacing:-.3px}
-.pf-desc{font-size:12px;color:var(--text-3);line-height:1.55}
-.pf-stats{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-.pf-stat-num{font-size:11.5px;color:var(--text-3)}
+.pf-top{display:flex;flex-direction:column;gap:10px;flex:1}
+.pf-name{font-size:20px;font-weight:700;color:var(--text);letter-spacing:-.4px;margin-bottom:2px}
+.pf-desc{font-size:12.5px;color:var(--text-3);line-height:1.6}
+.pf-stats{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding-top:4px}
+.pf-stat-num{font-size:12px;color:var(--text-3)}
 .pf-stat-num strong{color:var(--text-2);font-weight:600}
 .trend-up{color:var(--accent)}.trend-dn{color:var(--red)}.trend-fl{color:var(--text-4)}
 .bullet-list{list-style:none;display:flex;flex-direction:column;gap:8px;margin-bottom:12px}
@@ -260,21 +260,19 @@ svg{display:block;flex-shrink:0}
 .full-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);padding:18px 20px;grid-column:1/-1}
 .full-card-lbl{font-size:11px;font-weight:600;color:var(--text-4);text-transform:uppercase;letter-spacing:.6px;margin-bottom:14px}
 
-/* KB */
-.kb-wrap{display:flex;flex-direction:row;height:100%;overflow:hidden}
-.kb-hist{width:220px;min-width:220px;border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;transition:width .22s,min-width .22s;background:var(--sidebar)}
-.sidebar.collapsed .kb-hist{display:none}
-.kb-hist-head{padding:14px 14px 8px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
-.kb-hist-title{font-size:11px;font-weight:600;color:var(--text-4);text-transform:uppercase;letter-spacing:.6px}
-.kb-new-btn{font-size:11px;font-weight:600;color:var(--accent);cursor:pointer;padding:3px 8px;border-radius:var(--r);transition:background .12s}
-.kb-new-btn:hover{background:var(--accent-dim)}
-.kb-conv-list{flex:1;overflow-y:auto;padding:4px 8px}
-.kb-conv-item{padding:8px 10px;border-radius:var(--r);cursor:pointer;font-size:12px;color:var(--text-3);transition:all .12s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin:1px 0}
-.kb-conv-item:hover{background:rgba(255,255,255,.05);color:var(--text-2)}
-.light .kb-conv-item:hover{background:rgba(0,0,0,.05)}
-.kb-conv-item.active{background:var(--accent-dim);color:var(--accent)}
-.kb-conv-time{font-size:10px;color:var(--text-4);margin-top:1px}
-.kb-chat{flex:1;display:flex;flex-direction:column;overflow:hidden}
+/* KB — sidebar conversation items (rendered inside main sidebar) */
+.kb-sb-section{padding:4px 6px 6px;border-top:1px solid rgba(255,255,255,.05)}
+.light .kb-sb-section{border-top:1px solid rgba(0,0,0,.08)}
+.kb-sb-label{font-size:10px;font-weight:600;color:var(--text-4);text-transform:uppercase;letter-spacing:.5px;padding:6px 8px 4px;display:flex;align-items:center;justify-content:space-between}
+.kb-sb-new{font-size:10px;color:var(--text-3);cursor:pointer;padding:2px 6px;border-radius:var(--r);transition:all .12s}
+.kb-sb-new:hover{background:var(--accent-dim);color:var(--accent)}
+.kb-sb-conv{padding:6px 8px;border-radius:var(--r);cursor:pointer;font-size:12px;color:var(--text-3);transition:all .12s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin:1px 0}
+.kb-sb-conv:hover{background:rgba(255,255,255,.05);color:var(--text-2)}
+.light .kb-sb-conv:hover{background:rgba(0,0,0,.05)}
+.kb-sb-conv.active{background:var(--accent-dim);color:var(--accent)}
+.sidebar.collapsed .kb-sb-section{display:none}
+/* KB page — full width chat */
+.kb-wrap{display:flex;flex-direction:column;height:100%;overflow:hidden}
 .kb-msgs{flex:1;overflow-y:auto;padding:20px 28px;display:flex;flex-direction:column;gap:14px}
 .msg{max-width:72%;padding:11px 14px;border-radius:var(--r-lg);font-size:13px;line-height:1.55}
 .msg.user{align-self:flex-end;background:var(--accent-dim);border:1px solid var(--accent-bdr);color:var(--text)}
@@ -327,43 +325,37 @@ const CLIENT = {
   products:[
     { id:0, name:"Notetaker", desc:"Meeting transcription & note capture across Zoom, Teams, Webex",
       signals:12, prev:8, arr_stake:83, problems:2, requests:4, positive:6, open:4, status:"ok",
-      bullets:[
-        "<strong>Webex mobile transcription shipped in v2.4</strong> — 8 enterprise accounts auto-unlocked, zero complaints",
-        "<strong>Austrian-accent German audio</strong> causing ~15% accuracy drop — Nordwind Energy ticket #447 marked urgent by ops team",
-        "<strong>Meeting prep email timing</strong> — 5 users flagged prep arriving too late, requesting 30-min-before trigger instead of current 15-min",
-        "<strong>Most requested next feature:</strong> Summary templates per meeting type (sales call vs. standup vs. QBR)"
-      ]
+      stage:"GA", onTrack:true, nextMilestone:"v2.5 — Q3 2026",
+      roadmap:["Summary templates per meeting type (sales/standup/QBR) — in progress, ETA v2.5","30-min prep trigger as configurable default — in review, ETA v2.5","Austrian-German dialect model upgrade — planned Q4 2026"],
+      releases:[{v:"v2.4",date:"Jun 10",note:"Webex mobile transcription · 8 enterprise accounts auto-unlocked"},{v:"v2.3",date:"May 22",note:"Speaker diarization +12% accuracy · 3-speaker limit raised to 10"},{v:"v2.2",date:"Apr 30",note:"Meeting prep email introduced · 15-min default trigger"}],
+      bullets:["<strong>Webex mobile transcription shipped in v2.4</strong> — 8 enterprise accounts auto-unlocked, zero complaints","<strong>Austrian-accent German audio</strong> causing ~15% accuracy drop — Nordwind Energy ticket #447 urgent","<strong>Meeting prep timing</strong> — 5 users want 30-min trigger, current 15-min not enough","<strong>Top request:</strong> Summary templates per meeting type (sales call vs. standup vs. QBR)"]
     },
-    { id:1, name:"CRM Sync", desc:"Automated field mapping between calls and Salesforce / HubSpot",
+    { id:1, name:"CRM Sync", desc:"Automated field mapping between calls and Salesforce / HubSpot / Dynamics",
       signals:9, prev:3, arr_stake:83, problems:6, requests:2, positive:1, open:6, status:"bad",
-      bullets:[
-        "<strong>Salesforce sandbox refresh breaks field mapping</strong> — 3 customers affected (Nordwind Energy, Mercatura, Schäfer Logistics), tickets open",
-        "<strong>Dynamics 365 sync lag</strong> 10–15 min reported by Nordwind Energy — intermittent, no root cause identified yet",
-        "<strong>SAP connector timeouts</strong> — 3 failed syncs in last 48h on accounts with large deal volumes",
-        "<strong>Top request:</strong> Ability to map custom fields per account, not just globally"
-      ]
+      stage:"GA", onTrack:false, nextMilestone:"v1.8 hotfix — this week",
+      roadmap:["ENG-441: post-sandbox re-auth fix — in review, ETA this week","Per-account custom field mapping — planned Q3 2026","Dynamics 365 lag root cause investigation — in progress"],
+      releases:[{v:"v1.7",date:"May 15",note:"HubSpot connector GA · pipeline sync latency -40%"},{v:"v1.6",date:"Apr 12",note:"Salesforce custom objects support added"},{v:"v1.5",date:"Mar 28",note:"Dynamics 365 connector beta launch"}],
+      bullets:["<strong>Salesforce sandbox refresh breaks field mapping</strong> — 3 customers affected, tickets open","<strong>Dynamics 365 sync lag</strong> 10–15 min reported by Nordwind Energy — intermittent, no root cause yet","<strong>SAP connector timeouts</strong> — 3 failed syncs in last 48h","<strong>Top request:</strong> Per-account custom field mapping instead of global only"]
     },
     { id:2, name:"Coaching Assistant", desc:"AI-powered sales coaching suggestions based on call transcripts",
       signals:6, prev:9, arr_stake:52, problems:3, requests:2, positive:1, open:3, status:"warn",
-      bullets:[
-        "<strong>Industry-specific templates missing</strong> — Nordwind Energy requested energy-sector playbooks, current defaults feel generic",
-        "<strong>Coaching triggers feel delayed</strong> — users want real-time nudges during call, not post-call suggestions only",
-        "<strong>Declining usage trend:</strong> signals down 33% week-over-week, likely correlated with CRM Sync issues reducing trust in AI layer"
-      ]
+      stage:"Beta", onTrack:true, nextMilestone:"v1.0 GA — Q4 2026",
+      roadmap:["Industry template library (energy, logistics, fintech) — in progress","Real-time nudges during call — planned Q4 2026","Coaching score visible in CRM post-call — planned Q1 2027"],
+      releases:[{v:"v0.9",date:"May 30",note:"Suggestion latency -60% · post-call delivery improved"},{v:"v0.8",date:"Apr 18",note:"Multi-language support DE/EN/FR"},{v:"v0.7",date:"Mar 10",note:"Beta launch to 4 pilot customers"}],
+      bullets:["<strong>Industry-specific templates missing</strong> — Nordwind requested energy-sector playbooks, defaults too generic","<strong>Coaching triggers feel delayed</strong> — users want real-time nudges, not post-call only","<strong>Declining usage:</strong> signals down 33% WoW, likely correlated with CRM Sync trust erosion"]
     },
     { id:3, name:"Ask Bliro", desc:"Self-serve AI Q&A over your meeting history and knowledge base",
       signals:3, prev:3, arr_stake:31, problems:1, requests:2, positive:0, open:2, status:"warn",
-      bullets:[
-        "<strong>Flat signal trend</strong> — product not gaining or losing traction, low-urgency but low-engagement concern",
-        "<strong>Top request:</strong> Integration with Notion / Confluence to answer questions from docs, not just calls",
-        "<strong>One complaint:</strong> Hallucination on sparse meeting history — needs minimum data threshold warning"
-      ]
+      stage:"Beta", onTrack:true, nextMilestone:"v1.0 GA — Q1 2027",
+      roadmap:["Notion / Confluence connector for doc-based Q&A — in review","Minimum data threshold warning for sparse histories — planned","Citation UI showing source meeting — planned"],
+      releases:[{v:"v0.6",date:"Jun 1",note:"Retrieval re-ranking · response quality improved"},{v:"v0.5",date:"Apr 25",note:"Slack escalation routing to team members"},{v:"v0.4",date:"Mar 14",note:"Beta launch · first 3 customers onboarded"}],
+      bullets:["<strong>Flat signal trend</strong> — product not gaining traction, low-engagement concern","<strong>Top request:</strong> Notion / Confluence integration for doc-based Q&A","<strong>One complaint:</strong> Hallucination on sparse meeting history — needs data threshold warning"]
     }
   ],
 
   customers:[
-    { id:0, name:"Nordwind Energy AG", initials:"NE", arr:"€52k", arr_val:52,
-      signals:14, prev:9, industry:"Energy", risk:"high", problem_pct:64,
+    { id:0, name:"Nordwind Energy AG", initials:"NE", arr:"€52k", arr_val:52, resp_time:6.2,
+      signals:14, prev:9, industry:"Energy", risk:"high", problem_pct:64, resp_time:6.2,
       products:[0,1,2], last_contact:"3 days ago",
       bullets:[
         "<strong>CRM Sync field mapping failure</strong> after Salesforce sandbox refresh — 3 open tickets, their ops lead flagged it as blocking their weekly QBR prep",
@@ -372,7 +364,7 @@ const CLIENT = {
         "<strong>Meeting prep timing</strong> — their SDR team asked about the 30-min trigger in last week's check-in"
       ]
     },
-    { id:1, name:"Mercatura GmbH", initials:"MG", arr:"€31k", arr_val:31,
+    { id:1, name:"Mercatura GmbH", initials:"MG", arr:"€31k", arr_val:31, resp_time:3.1,
       signals:9, prev:7, industry:"Retail", risk:"med", problem_pct:44,
       products:[0,1], last_contact:"1 week ago",
       bullets:[
@@ -381,7 +373,7 @@ const CLIENT = {
         "<strong>Feature request:</strong> Bulk export of meeting summaries to PDF for board reporting"
       ]
     },
-    { id:2, name:"Schäfer Logistics", initials:"SL", arr:"€19k", arr_val:19,
+    { id:2, name:"Schäfer Logistics", initials:"SL", arr:"€19k", arr_val:19, resp_time:2.8,
       signals:6, prev:5, industry:"Logistics", risk:"low", problem_pct:33,
       products:[0,1], last_contact:"5 days ago",
       bullets:[
@@ -390,7 +382,7 @@ const CLIENT = {
         "<strong>Expansion signal:</strong> Asked about seat pricing for 5 additional reps"
       ]
     },
-    { id:3, name:"Konrad & Bremer", initials:"KB", arr:"€11k", arr_val:11,
+    { id:3, name:"Konrad & Bremer", initials:"KB", arr:"€11k", arr_val:11, resp_time:8.4,
       signals:4, prev:4, industry:"Consulting", risk:"low", problem_pct:25,
       products:[0,3], last_contact:"1 week ago",
       bullets:[
@@ -399,7 +391,7 @@ const CLIENT = {
         "<strong>No urgent actions</strong> — stable account, low churn risk"
       ]
     },
-    { id:4, name:"TechVentures Berlin", initials:"TV", arr:"€44k", arr_val:44,
+    { id:4, name:"TechVentures Berlin", initials:"TV", arr:"€44k", arr_val:44, resp_time:4.7,
       signals:11, prev:7, industry:"Tech", risk:"med", problem_pct:45,
       products:[0,1,2], last_contact:"2 days ago",
       bullets:[
@@ -408,7 +400,7 @@ const CLIENT = {
         "<strong>Notetaker speaker labels</strong> — 2 complaints about missed labels on large group calls"
       ]
     },
-    { id:5, name:"Alpenwind GmbH", initials:"AW", arr:"€28k", arr_val:28,
+    { id:5, name:"Alpenwind GmbH", initials:"AW", arr:"€28k", arr_val:28, resp_time:11.2,
       signals:12, prev:6, industry:"Manufacturing", risk:"high", problem_pct:67,
       products:[1,2], last_contact:"1 day ago",
       bullets:[
@@ -417,7 +409,7 @@ const CLIENT = {
         "<strong>Churn risk:</strong> Mentioned evaluating Fathom in last check-in — direct competitor"
       ]
     },
-    { id:6, name:"Medix Solutions", initials:"MS", arr:"€36k", arr_val:36,
+    { id:6, name:"Medix Solutions", initials:"MS", arr:"€36k", arr_val:36, resp_time:2.3,
       signals:7, prev:8, industry:"Healthcare", risk:"low", problem_pct:29,
       products:[0,3], last_contact:"4 days ago",
       bullets:[
@@ -426,7 +418,7 @@ const CLIENT = {
         "<strong>Positive NPS:</strong> Head of ops gave a 9 last month, expansion likely"
       ]
     },
-    { id:7, name:"FinFlux AG", initials:"FF", arr:"€22k", arr_val:22,
+    { id:7, name:"FinFlux AG", initials:"FF", arr:"€22k", arr_val:22, resp_time:5.9,
       signals:5, prev:3, industry:"FinTech", risk:"med", problem_pct:40,
       products:[0,1], last_contact:"6 days ago",
       bullets:[
@@ -435,7 +427,7 @@ const CLIENT = {
         "<strong>Feature request:</strong> Sentiment score surfaced as a CRM field after call sync"
       ]
     },
-    { id:8, name:"Ravel Media GmbH", initials:"RM", arr:"€15k", arr_val:15,
+    { id:8, name:"Ravel Media GmbH", initials:"RM", arr:"€15k", arr_val:15, resp_time:7.1,
       signals:3, prev:4, industry:"Media", risk:"low", problem_pct:33,
       products:[0], last_contact:"1 week ago",
       bullets:[
@@ -447,51 +439,52 @@ const CLIENT = {
   ],
 
   updates:[
-    { id:0, sev:"red",    title:"CRM Sync reliability drop",
-      desc:"3 customers reported missed field updates after Salesforce sandbox refresh.",
-      time:"2h", pushed:false,
+    { id:0, sev:"green", title:"Notetaker v2.4 — Webex support shipped",
+      type:"release", audience:"All customers · #product-updates",
+      time:"1h", pushed:false, slackReady:true,
       bullets:[
-        "<strong>Root cause:</strong> Salesforce sandbox refresh resets custom field metadata — our sync agent doesn't re-authenticate field mappings post-refresh",
-        "<strong>Impacted accounts:</strong> Nordwind Energy (€52k ARR), Mercatura GmbH (€31k), Schäfer Logistics (€19k) — total €102k ARR exposed",
-        "<strong>Suggested Slack message:</strong> 'CRM Sync field mapping issue identified. Engineering has a fix in review (ENG-441). ETA: today EOD. Affected accounts notified.'",
-        "<strong>Suggested customer email:</strong> 'We identified an issue affecting CRM Sync after Salesforce sandbox refreshes. A fix is in review and we'll update you by EOD today.'"
+        "<strong>What shipped:</strong> Webex mobile transcription now available · 8 enterprise accounts auto-unlocked",
+        "<strong>Slack draft ready:</strong> '🎉 Notetaker v2.4 is live! Webex mobile transcription is now supported — no setup needed. Your account has been upgraded automatically.'",
+        "<strong>LinkedIn draft ready:</strong> 'We just shipped Webex mobile support in Notetaker. Enterprise teams can now transcribe from any device...'",
+        "<strong>Suggested send to:</strong> All accounts · no customer-specific filtering needed"
       ]
     },
-    { id:1, sev:"red",    title:"Transcript accuracy: dialect audio",
-      desc:"Austrian-accent German audio triggers ~15% accuracy drop. Nordwind Energy ticket #447 urgent.",
-      time:"4h", pushed:false,
+    { id:1, sev:"yellow", title:"CRM Sync hotfix ETA — customer notice",
+      type:"incident_update", audience:"Nordwind Energy, Mercatura, Schäfer · direct email",
+      time:"2h", pushed:false, slackReady:true,
       bullets:[
-        "<strong>Issue:</strong> Whisper model variant used has lower accuracy on Austrian-German phonemes vs. standard German",
-        "<strong>One customer affected:</strong> Nordwind Energy, 4 reps impacted — their highest-ARR account",
-        "<strong>Fix path:</strong> Switch to larger Whisper model for DE-AT locale detection, or add manual language override",
-        "<strong>Suggested communication:</strong> Direct email to Nordwind Energy ops lead acknowledging the issue with ETA"
+        "<strong>What to communicate:</strong> We identified a Salesforce sandbox re-auth issue — fix is in engineering review (ENG-441), ETA today EOD.",
+        "<strong>Email draft ready:</strong> 'We're aware of a CRM Sync field mapping issue affecting sandbox-refreshed Salesforce environments. A fix is in review and we'll update you by EOD today.'",
+        "<strong>Affected accounts:</strong> Nordwind Energy (€52k ARR), Mercatura GmbH (€31k), Schäfer Logistics (€19k)",
+        "<strong>n8n Slack workflow:</strong> Hook connected — push will auto-format and post to #product-updates + DM to affected account owners"
       ]
     },
-    { id:2, sev:"yellow", title:"Coaching Assistant: playbook gap",
-      desc:"Nordwind Energy requested industry-specific templates.",
-      time:"8h", pushed:false,
+    { id:2, sev:"green", title:"Coaching Assistant v0.9 — latency improvements",
+      type:"release", audience:"Pilot customers · #product-updates",
+      time:"3d", pushed:true, slackReady:false,
       bullets:[
-        "<strong>Request pattern:</strong> 2 separate mentions in calls, 1 ticket — energy sector discovery questions are too generic",
-        "<strong>Effort to fix:</strong> Low — 5-10 industry template presets could be added in one sprint",
-        "<strong>Revenue signal:</strong> If Coaching Assistant improves, expansion signal from Nordwind Energy (asked about 2 more seats)"
+        "<strong>What shipped:</strong> Suggestion delivery latency -60% · post-call suggestions now arrive within 90 seconds of call end",
+        "<strong>Comms pushed:</strong> Slack #product-updates sent, pilot customers emailed individually",
+        "<strong>Engagement:</strong> TechVentures Berlin responded positively — asked about expanding to 5 more AEs"
       ]
     },
-    { id:3, sev:"yellow", title:"Meeting prep timing issue",
-      desc:"5 users flagged prep emails arrive too late. Requesting 30-min trigger.",
-      time:"1d", pushed:false,
+    { id:3, sev:"yellow", title:"Q3 2026 roadmap preview — share with customers",
+      type:"roadmap", audience:"Key accounts · newsletter",
+      time:"5d", pushed:false, slackReady:true,
       bullets:[
-        "<strong>Current behavior:</strong> Prep email sends 15 min before meeting — not enough time for users to review",
-        "<strong>Requested:</strong> 30-min trigger as default, with user-configurable timing",
-        "<strong>Affected users across:</strong> Nordwind Energy, Mercatura GmbH — both mentioned in separate calls"
+        "<strong>What to share:</strong> Notetaker v2.5 (summary templates + 30-min prep), CRM Sync custom field mapping, Coaching GA",
+        "<strong>Newsletter draft ready:</strong> 'Here's what we're shipping in Q3 — and why we're building it based on your feedback...'",
+        "<strong>Personalisation tip:</strong> Segment by industry — energy customers should see Coaching template news first",
+        "<strong>n8n workflow:</strong> Newsletter trigger ready, connect Mailchimp or Brevo in Settings → Integrations"
       ]
     },
-    { id:4, sev:"green",  title:"Notetaker v2.4 shipped",
-      desc:"Webex mobile transcription added. 8 enterprise accounts unlocked automatically.",
-      time:"1d", pushed:true,
+    { id:4, sev:"green", title:"Medix Solutions expansion — success story",
+      type:"social", audience:"LinkedIn · company page",
+      time:"6d", pushed:false, slackReady:false,
       bullets:[
-        "<strong>Impact:</strong> 8 accounts that were blocked on Webex mobile now have full transcription — zero config needed",
-        "<strong>Positive signals:</strong> Mercatura GmbH already sent a thumbs-up in Slack",
-        "<strong>Comms already pushed:</strong> Slack #product update sent, LinkedIn post drafted"
+        "<strong>Story:</strong> Medix compliance team uses Ask Bliro daily to query 6 months of meeting history — reduced policy review time by ~40%",
+        "<strong>LinkedIn draft ready:</strong> 'How a 200-person healthcare company uses Marrow to keep their compliance team in sync without reading every meeting note...'",
+        "<strong>Customer approval:</strong> Head of ops confirmed they're happy to be quoted — get written consent before publishing"
       ]
     }
   ],
@@ -506,6 +499,8 @@ const CLIENT = {
 };
 
 /* ── COMPUTED ── */
+const scopeM = () => ({'7d':1,'30d':4.1,'90d':11.3})[activeScope]||1;
+const scopeVal = n => Math.round(n * scopeM());
 const totalSignals = () => CLIENT.customers.reduce((a,c)=>a+c.signals,0);
 const prevSignals = () => CLIENT.customers.reduce((a,c)=>a+c.prev,0);
 const urgency = p => p.problems * p.arr_stake;
@@ -514,6 +509,7 @@ const topProduct = () => sortedProducts()[0];
 const pendingUpdates = () => CLIENT.updates.filter(u=>!u.pushed).length;
 const happinessScore = () => { const tot=CLIENT.customers.reduce((a,c)=>a+c.arr_val,0); const wt=CLIENT.customers.reduce((a,c)=>a+(c.problem_pct*c.arr_val),0); return Math.round(100-wt/tot); };
 const atRiskCount = () => CLIENT.customers.filter(c=>c.risk==='high').length;
+const avgResponseTime = () => { const v=CLIENT.customers.filter(c=>c.resp_time); return v.length?(v.reduce((a,c)=>a+c.resp_time,0)/v.length).toFixed(1):'—'; };
 const trendPct = (cur,prev) => prev===0?null:Math.round(((cur-prev)/prev)*100);
 const trendStr = (cur,prev) => {
   const p = trendPct(cur,prev);
@@ -535,6 +531,7 @@ let detailId = null;
 let detailType = null;
 let settingsTab = 'integrations';
 let activeScope = '7d';
+let custFilter = 'all'; // 'all'|'at-risk'|'satisfied'|'unhappy'
 let chatPopupOpen = false;
 let popupHistory = [];
 
@@ -604,10 +601,7 @@ function navTo(page, id=null, type=null) {
   currentPage = page;
   detailId = id;
   detailType = type;
-  document.querySelectorAll('.nav-item').forEach(n => {
-    const base = page.replace('-detail','');
-    n.classList.toggle('active', n.dataset.page === (page==='kb'?'kb': page==='settings'?'settings': base==='overview'?'overview': base));
-  });
+  rebuildSidebar();
   if (page === 'settings') { renderSettings(); return; }
   const fn = {
     overview: pageOverview, products: pageProducts,
@@ -812,15 +806,38 @@ function pageProductDetail(id) {
       </div>
     </div>
 
+    <div class="detail-grid" style="grid-template-columns:1fr 1fr 1fr;margin-bottom:14px">
+      <div class="stat-card">
+        <div class="stat-lbl">Development stage</div>
+        <div class="stat-val" style="font-size:20px;color:${p.stage==='GA'?'var(--accent)':p.stage==='Beta'?'var(--yellow)':'var(--text-3)'}">${p.stage}</div>
+        <div class="stat-sub">Next: ${p.nextMilestone}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-lbl">On track</div>
+        <div class="stat-val ${p.onTrack?'green':'red'}">${p.onTrack?'Yes':'At risk'}</div>
+        <div class="stat-sub">${p.onTrack?'Milestone on schedule':'Behind — see roadmap'}</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-lbl">Open actions</div>
+        <div class="stat-val ${p.open>3?'red':'yellow'}">${p.open}</div>
+        <div class="stat-sub">unresolved problems &amp; requests</div>
+      </div>
+    </div>
+
+    <div class="detail-grid" style="grid-template-columns:1fr 1fr;margin-bottom:14px">
+      <div class="full-card" style="grid-column:auto">
+        <div class="full-card-lbl">Roadmap</div>
+        ${p.roadmap.map(r=>`<div class="tl-item"><div class="tl-dc"><div class="tl-dot" style="background:var(--${r.includes('in progress')?'accent':r.includes('in review')?'yellow':'text-4'})"></div></div><div class="tl-txt">${r}</div></div>`).join('')}
+      </div>
+      <div class="full-card" style="grid-column:auto">
+        <div class="full-card-lbl">Recent releases</div>
+        ${p.releases.map(r=>`<div class="tl-item"><div class="tl-dc"><div class="tl-dot" style="background:var(--accent)"></div></div><div class="tl-txt"><strong style="color:var(--text)">${r.v}</strong> <span style="color:var(--text-4);font-size:11px">${r.date}</span><br>${r.note}</div></div>`).join('')}
+      </div>
+    </div>
+
     <div class="full-card">
       <div class="full-card-lbl">Key signals this week</div>
-      <div class="timeline">
-        ${p.bullets.map(b=>`
-          <div class="tl-item">
-            <div class="tl-dot-col"><div class="tl-dot" style="background:var(--${b.includes('shipped')||b.includes('positive')||b.includes('fast')?'accent':b.includes('request')||b.includes('Request')?'yellow':'red'})"></div></div>
-            <div class="tl-body"><div class="tl-text">${b}</div></div>
-          </div>`).join('')}
-      </div>
+      ${p.bullets.map(b=>`<div class="tl-item"><div class="tl-dc"><div class="tl-dot" style="background:var(--${b.includes('shipped')||b.includes('positive')||b.includes('fast')?'accent':b.includes('request')||b.includes('Request')?'yellow':'red'})"></div></div><div class="tl-txt">${b}</div></div>`).join('')}
     </div>
   </div>`;
 }
@@ -856,12 +873,50 @@ function pageCustomers() {
   const hs = happinessScore();
   const atR = atRiskCount();
   const totalArr = CLIENT.customers.reduce((a,c)=>a+c.arr_val,0);
+  const avgRT = avgResponseTime();
+  const sigDisplay = scopeVal(totalSignals());
+  const prevDisplay = scopeVal(prevSignals());
+
+  // Apply filter
+  let filtered = [...CLIENT.customers].sort((a,b)=>b.arr_val-a.arr_val);
+  if (custFilter==='at-risk') filtered = filtered.filter(c=>c.risk==='high');
+  else if (custFilter==='satisfied') filtered = filtered.filter(c=>c.risk==='low'&&c.problem_pct<35);
+  else if (custFilter==='unhappy') filtered = filtered.filter(c=>c.problem_pct>50);
+
+  const filteredRows = filtered.map(c=>`
+    <div class="li-row" id="li-c-${c.id}" onclick="toggleListRow('li-c-${c.id}')">
+      <div class="li-row-top">
+        <div class="li-av">${c.initials}</div>
+        <div class="li-info">
+          <div class="li-name">${c.name}</div>
+          <div class="li-meta">${c.industry} · ${scopeVal(c.signals)} signals · avg response ${c.resp_time?c.resp_time+'h':'—'}</div>
+        </div>
+        <div class="li-right">
+          <span class="arr-num">${c.arr}</span>
+          <span class="${riskClass(c.risk)}">${c.risk.toUpperCase()}</span>
+        </div>
+      </div>
+      <div class="acc-body li-acc">
+        <div class="li-acc-inner">
+          <ul class="bullet-list" style="margin-bottom:10px">
+            ${c.bullets.map(b=>`<li class="bullet-item">${b}</li>`).join('')}
+          </ul>
+          <div class="view-full-btn" onclick="event.stopPropagation();navTo('customer-detail',${c.id})">
+            View full profile ${svgIcon(ICONS.chevron,12)}
+          </div>
+        </div>
+      </div>
+    </div>`).join('');
+
+  const filterLabel = custFilter==='at-risk'?'At-risk accounts':custFilter==='satisfied'?'Satisfied accounts':custFilter==='unhappy'?'Unhappy accounts':'All accounts';
+  const filterBanner = custFilter!=='all' ? `<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;padding:8px 12px;background:var(--surface-2);border-radius:var(--r);font-size:12px;color:var(--text-3)">Showing: <strong style="color:var(--text-2)">${filterLabel}</strong><span style="cursor:pointer;color:var(--accent)" onclick="custFilter='all';navTo('customers')">Clear filter ×</span></div>` : '';
+
   return `
   <div class="topbar">
     <div style="display:flex;align-items:center;justify-content:space-between">
       <div>
         <div class="page-title">Customers</div>
-        <div class="page-sub">${CLIENT.customers.length} accounts · ${totalSignals()} signals</div>
+        <div class="page-sub">${CLIENT.customers.length} accounts · ${sigDisplay} signals (${activeScope})</div>
       </div>
       <div class="scope-tabs">
         <div class="scope-tab ${activeScope==='7d'?'active':''}" onclick="activeScope='7d';navTo('customers')">7d</div>
@@ -872,21 +927,40 @@ function pageCustomers() {
   </div>
   <div class="page-content">
     <div class="cust-hero">
-      <div class="hero-card"><div class="hero-lbl">Satisfaction score</div><div class="hero-val" style="color:${hs>=70?'var(--accent)':hs>=50?'var(--yellow)':'var(--red)'}">${hs}/100</div><div class="hero-sub">ARR-weighted · problem ratio</div></div>
-      <div class="hero-card"><div class="hero-lbl">At-risk accounts</div><div class="hero-val" style="color:${atR>0?'var(--red)':'var(--accent)'}">${atR}</div><div class="hero-sub">${atR} HIGH churn risk</div></div>
-      <div class="hero-card"><div class="hero-lbl">Total ARR</div><div class="hero-val">€${totalArr}k</div><div class="hero-sub">across ${CLIENT.customers.length} accounts</div></div>
-      <div class="hero-card"><div class="hero-lbl">Signal volume (${activeScope})</div><div class="hero-val">${totalSignals()}</div><div class="hero-sub">${trendStr(totalSignals(),prevSignals())} vs prior period</div></div>
+      <div class="hero-card" style="cursor:pointer" onclick="custFilter=custFilter==='satisfied'?'all':'satisfied';navTo('customers')">
+        <div class="hero-lbl">Satisfaction score ${custFilter==='satisfied'?'<span style=\'color:var(--accent)\'>●</span>':''}</div>
+        <div class="hero-val" style="color:${hs>=70?'var(--accent)':hs>=50?'var(--yellow)':'var(--red)'}">${hs}/100</div>
+        <div class="hero-sub">Click to filter satisfied</div>
+      </div>
+      <div class="hero-card" style="cursor:pointer" onclick="custFilter=custFilter==='at-risk'?'all':'at-risk';navTo('customers')">
+        <div class="hero-lbl">At-risk accounts ${custFilter==='at-risk'?'<span style=\'color:var(--red)\'>●</span>':''}</div>
+        <div class="hero-val" style="color:${atR>0?'var(--red)':'var(--accent)'}">${atR}</div>
+        <div class="hero-sub">Click to filter HIGH risk</div>
+      </div>
+      <div class="hero-card">
+        <div class="hero-lbl">Avg response time</div>
+        <div class="hero-val" style="color:${parseFloat(avgRT)>8?'var(--red)':parseFloat(avgRT)>4?'var(--yellow)':'var(--accent)'}">${avgRT}h</div>
+        <div class="hero-sub">avg time to reply to requests</div>
+      </div>
+      <div class="hero-card">
+        <div class="hero-lbl">Signal volume</div>
+        <div class="hero-val">${sigDisplay}</div>
+        <div class="hero-sub">${trendStr(sigDisplay,prevDisplay)} vs prior ${activeScope}</div>
+      </div>
     </div>
-    <div class="list-box">${rows}</div>
+    ${filterBanner}
+    <div class="list-box">${filteredRows||'<div style="padding:20px;font-size:12px;color:var(--text-4);text-align:center">No customers match this filter.</div>'}</div>
   </div>`;
 }
 
 function toggleListRow(id) {
   const row = $(id);
+  if (!row) return;
   const body = row.querySelector('.acc-body');
+  if (!body) return;
   const isOpen = row.classList.contains('open');
   row.classList.toggle('open', !isOpen);
-  body.style.maxHeight = isOpen ? '0' : body.scrollHeight + 'px';
+  body.style.maxHeight = isOpen ? '0' : '500px';
   body.style.opacity = isOpen ? '0' : '1';
 }
 
@@ -953,15 +1027,18 @@ function pageCustomerDetail(id) {
 
 /* COMMUNICATION */
 function pageCommunication() {
+  const typeLabel = t => ({release:'🚀 Release',incident_update:'⚠️ Incident update',roadmap:'🗺 Roadmap',social:'📣 Social'})[t]||t||'Update';
   const rows = CLIENT.updates.map(u => `
     <div class="upd-row" id="upd-${u.id}" onclick="toggleUpdRow(${u.id})">
       <div class="upd-row-top">
         <div class="dot ${u.sev}" style="margin-top:2px;flex-shrink:0"></div>
         <div style="flex:1;min-width:0">
           <div class="upd-title">${u.title}</div>
-          <div style="font-size:11px;color:var(--text-4);margin-top:1px">${u.time} ago${u.pushed?' · Pushed':'· Not pushed'}</div>
+          <div style="font-size:11px;color:var(--text-4);margin-top:1px">
+            ${typeLabel(u.type)} · ${u.audience||''} · ${u.time} ago · ${u.pushed?'<span style="color:var(--accent)">Pushed</span>':'Not pushed'}
+          </div>
         </div>
-        ${!u.pushed ? `<button class="push-btn" onclick="event.stopPropagation()">Push update</button>` : `<span class="tag green">Pushed</span>`}
+        ${!u.pushed && u.slackReady ? `<button class="push-btn" onclick="event.stopPropagation();alert('n8n Slack workflow triggered!')">Push to Slack</button>` : u.pushed ? `<span class="tag green">Pushed</span>` : `<button class="push-btn" style="opacity:.5;cursor:default">Draft ready</button>`}
       </div>
       <div class="acc-body upd-acc">
         <div class="upd-acc-inner">
@@ -970,7 +1047,7 @@ function pageCommunication() {
           </ul>
           <div style="display:flex;align-items:center;justify-content:space-between">
             <div style="display:flex;gap:6px">
-              <span class="tag neutral">${svgIcon(ICONS.communication,10)} Push via Slack</span>
+              ${u.slackReady?`<span class="tag green">${svgIcon(ICONS.communication,10)} Slack ready (n8n)</span>`:`<span class="tag neutral">${svgIcon(ICONS.communication,10)} Slack</span>`}
               <span class="tag neutral">LinkedIn</span>
               <span class="tag neutral">Newsletter</span>
             </div>
@@ -1053,38 +1130,21 @@ function pageKB() {
   const hasKey = window.MARROW_OPENAI_KEY && !window.MARROW_OPENAI_KEY.includes('paste');
   if (!activeConvId) newKbConv();
   const conv = getActiveConv();
-
-  const convItems = kbConvs.map(c=>`
-    <div class="kb-conv-item ${c.id===activeConvId?'active':''}" onclick="switchConv(${c.id})">
-      ${c.title}
-      <div class="kb-conv-time">${c.ts}</div>
-    </div>`).join('');
-
   const msgs = conv ? conv.messages.map(m=>`
     <div class="msg ${m.role==='user'?'user':'ai'}">${m.content}<div class="msg-time">${m.role==='user'?'You':'Marrow'}</div></div>`).join('') : '';
-
   return `
-  ${topbar('Knowledge Base', `Ask anything about ${CLIENT.companyDisplay}`)}
+  ${topbar('Knowledge Base', conv ? conv.title : `Ask anything about ${CLIENT.companyDisplay}`)}
   ${!hasKey ? `<div class="kb-notice">Add your OpenAI key to marrow-config.js to enable live responses.</div>` : ''}
   <div class="kb-wrap">
-    <div class="kb-hist">
-      <div class="kb-hist-head">
-        <span class="kb-hist-title">History</span>
-        <span class="kb-new-btn" onclick="startNewConv()">+ New</span>
-      </div>
-      <div class="kb-conv-list">${convItems||'<div style="padding:8px 10px;font-size:12px;color:var(--text-4)">No conversations yet.</div>'}</div>
+    <div class="kb-msgs" id="kb-msgs">
+      ${msgs||`<div style="text-align:center;padding:24px 0 8px"><div style="font-size:12px;color:var(--text-4)">Ask about ${CLIENT.companyDisplay}'s products, customers, or signals</div></div>`}
     </div>
-    <div class="kb-chat">
-      <div class="kb-msgs" id="kb-msgs">
-        ${msgs||'<div style="text-align:center;padding:24px 0 8px"><div style="font-size:12px;color:var(--text-4)">Ask about '+CLIENT.companyDisplay+'\'s products, customers, or signals</div></div>'}
+    <div class="kb-in-wrap">
+      <div class="kb-in-row">
+        <input class="kb-in" id="kb-in" placeholder="Ask anything…" onkeydown="if(event.key==='Enter')sendMsg()">
+        <button class="kb-send" onclick="sendMsg()">${svgIcon(ICONS.send,13).replace('currentColor','#000')}</button>
       </div>
-      <div class="kb-in-wrap">
-        <div class="kb-in-row">
-          <input class="kb-in" id="kb-in" placeholder="Ask anything…" onkeydown="if(event.key==='Enter')sendMsg()">
-          <button class="kb-send" onclick="sendMsg()">${svgIcon(ICONS.send,13).replace('currentColor','#000')}</button>
-        </div>
-        <div class="kb-disc">Answers grounded in your product data · Powered by Marrow AI</div>
-      </div>
+      <div class="kb-disc">Answers grounded in your product data · Powered by Marrow AI</div>
     </div>
   </div>`;
 }
@@ -1186,6 +1246,13 @@ function renderSettings() {
 }
 
 /* ── BUILD SIDEBAR ── */
+function rebuildSidebar() {
+  $('sidebar').innerHTML = buildSidebar();
+  $('sb-av').textContent = CLIENT.user.initials;
+  $('sb-name').textContent = CLIENT.user.name;
+  $('sb-role').textContent = CLIENT.user.role;
+}
+
 function buildSidebar() {
   const navItems = [
     { id:'overview', label:'Overview', icon:ICONS.overview },
@@ -1195,13 +1262,22 @@ function buildSidebar() {
     { id:'kb', label:'Knowledge Base', icon:ICONS.kb },
   ];
 
+  const kbSection = currentPage === 'kb' && kbConvs.length > 0 ? `
+    <div class="kb-sb-section">
+      <div class="kb-sb-label">Chats <span class="kb-sb-new" onclick="startNewConv()">+ New</span></div>
+      ${kbConvs.slice(0,8).map(c=>`<div class="kb-sb-conv ${c.id===activeConvId?'active':''}" onclick="switchConv(${c.id})" title="${c.title}">${c.title}</div>`).join('')}
+    </div>` : currentPage === 'kb' ? `
+    <div class="kb-sb-section">
+      <div class="kb-sb-label">Chats <span class="kb-sb-new" onclick="startNewConv()">+ New</span></div>
+    </div>` : '';
+
   const items = navItems.map(n => {
-    if (!n) return `<div class="nav-gap"></div>`;
-    return `<div class="nav-item ${n.id==='overview'?'active':''}" data-page="${n.id}" onclick="navTo('${n.id}')">
+    const isActive = currentPage === n.id || (currentPage === 'kb' && n.id === 'kb');
+    return `<div class="nav-item ${isActive?'active':''}" data-page="${n.id}" onclick="navTo('${n.id}')">
       ${svgIcon(n.icon)}
       <span class="nav-lbl">${n.label}</span>
       ${n.badge ? `<span class="nav-bdg ${n.badgeClass}">${n.badge}</span>` : ''}
-    </div>`;
+    </div>` + (n.id === 'kb' ? kbSection : '');
   }).join('');
 
   return `
@@ -1239,10 +1315,7 @@ function buildSidebar() {
 
 /* ── INIT ── */
 document.addEventListener('DOMContentLoaded', () => {
-  $('sidebar').innerHTML = buildSidebar();
-  $('sb-av').textContent = CLIENT.user.initials;
-  $('sb-name').textContent = CLIENT.user.name;
-  $('sb-role').textContent = CLIENT.user.role;
+  rebuildSidebar();
   $('main').innerHTML = pageOverview();
 });
 </script>
